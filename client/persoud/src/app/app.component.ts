@@ -6,23 +6,39 @@ import { FileCard } from './models/file';
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css']
 })
+
 export class AppComponent {
   title = 'persoud';
 
   files: FileCard[];
 
   constructor() {
-    
+    this.files = [];
   }
 
-  ngOnInit() {
-    this.files = [];
-    let file: FileCard = new FileCard();
+  ngOnInit() {let file: FileCard = new FileCard();
     file.id = 1;
     file.name = "file_name";
     file.type = "file";
-    
 
+    this.files.push(file);
+    this.files.push(file);
+    this.files.push(file);
+    this.files.push(file);
+    this.files.push(file);
+    this.files.push(file);
+    this.files.push(file);
+    this.files.push(file);
+    this.files.push(file);
+    this.files.push(file);
+    this.files.push(file);
+    this.files.push(file);
+    this.files.push(file);
+    this.files.push(file);
+    this.files.push(file);
+    this.files.push(file);
+    this.files.push(file);
+    this.files.push(file);
     this.files.push(file);
     this.files.push(file);
     this.files.push(file);

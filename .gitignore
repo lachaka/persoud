@@ -100,5 +100,13 @@ dist
 # DynamoDB Local files
 .dynamodb/
 
+/.idea  
+.project  
+.classpath  
+.c9/  
+*.launch  
+.settings/  
+*.sublime-workspace  
+
 # TernJS port file
 .tern-port

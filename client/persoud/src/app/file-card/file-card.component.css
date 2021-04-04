@@ -1,12 +1,23 @@
 p {
     text-align: center;
-    padding: 10px;
+    margin: 5%;
+    flex: 1;
+  
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 img {
     width: 90%;
-    padding-left: 5%;
-    padding-right: 5%;
-    padding-top: 5%;
-    padding-bottom: 0%;
+    margin-left: 5%;
+    margin-right: 5%;
+    margin-top: 5%;
+    margin-bottom: 0%;
 }
+
+@media (max-width: 500px) { 
+    img {
+        display: none;
+    }
+ }
