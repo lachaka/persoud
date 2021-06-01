@@ -93,32 +93,39 @@ form.search button:hover {
   background: #172815;
 }
 
-.file {
-  border: 1px solid;
-  border-radius: 5px;
-  border-color: lightgray;
-  box-shadow: 0 3px 5px 0 rgba(0, 0, 0, 0.19);
-  margin: 10px;
-  width: 15%;
-  transition: all 0.2s ease;
-  position: relative;
-  top: 0;
-  cursor: pointer;
-}
-
-.file:hover {
-  position: relative;
-  top: -10px;
-  box-shadow: 0 10px 20px 0 rgba(0, 0, 0, 0.10);
-}
-
-.content {
-  height: calc(100vh - 80px);
+.main {
   display: flex;
-  flex-wrap: wrap;
-  margin: auto;
-  width: 85%;
-  overflow: auto;
+}
+
+.vertical-menu {
+  margin-left: 20px;
+  width: 10%;
+  cursor: pointer;
+  height: calc(100vh - 80px);
+}
+
+.vertical-menu button {
+  font-size: 20px;
+  background: #3E5622;
+  color: white;
+  border: none;
+  width: 150px;
+  padding: 15px 30px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border-radius: 5px;
+}
+
+.vertical-menu button:hover {
+  background: #172815;
+}
+
+.vertical-menu div:hover {
+  background-color: #95B46A;
+}
+
+.vertical-menu div {
+  padding: 10px 5px;
 }
 
 footer {

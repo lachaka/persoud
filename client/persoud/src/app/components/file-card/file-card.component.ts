@@ -1,5 +1,5 @@
 import { Component, OnInit, Input } from '@angular/core';
-import { FileCard } from '../models/file'
+import { FileCard } from '../../models/file'
 
 @Component({
   selector: 'app-file-card',

@@ -1,9 +1,7 @@
 export class FileCard {
-    id: number;
     name: string;
-    type: string;
+    url: string;
     size: number;
-    icon: string;
-    location: string
+    isDir: boolean;
 }
 

@@ -1,19 +1,23 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
-import {RouterModule, Routes} from '@angular/router';
+import { RouterModule, Routes } from '@angular/router';
+import { HttpClientModule } from '@angular/common/http';
 
 import { AppComponent } from './app.component';
-import { FileCardComponent } from './file-card/file-card.component';
+import { FileCardComponent } from './components/file-card/file-card.component';
+import { FileExplorerComponent } from './components/file-explorer/file-explorer.component';
 
 const routes: Routes = [];
 
 @NgModule({
   declarations: [
     AppComponent,
-    FileCardComponent
+    FileCardComponent,
+    FileExplorerComponent
   ],
   imports: [
     BrowserModule,
+    HttpClientModule,
     RouterModule.forRoot(routes)
   ],
   providers: [],
