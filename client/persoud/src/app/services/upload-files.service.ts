@@ -9,21 +9,26 @@ import { FileCard } from '../models/file'
 })
 
 export class UploadFilesService {
-  private baseUrl = 'http://localhost:3000/files/';
+  private baseUrl = 'http://localhost:3000/files';
 
   constructor(private http: HttpClient) { }
 
-  upload(file: File, location: string) {
+  upload(file: File, path: string) {
     const formData: FormData = new FormData();
-
     formData.append('file', file);
+    formData.append('path', path);
 
-    const req = new HttpRequest('POST', `${this.baseUrl}/upload?path=${location}`, formData, {
+    console.log("service");
+    // const req = new HttpRequest('POST', `${this.baseUrl}/upload`, formData, {
+    //   reportProgress: true,
+    //   responseType: 'json'
+    // });
+
+    // return this.http.request(req);
+    return this.http.post(`${this.baseUrl}/upload`, formData, {
       reportProgress: true,
       responseType: 'json'
     });
-
-    return this.http.request(req);
   }
 
   getFiles(path: string, location: string) {

@@ -4,11 +4,11 @@ require('dotenv').config();
 const UPLOAD_DIR = process.env.UPLOAD_DIR;
 
 const storage = multer.diskStorage({
-    destination: (req: Express.Request, file: Express.Multer.File, callback: (error: Error | null, destination: string) => void) => {
-        callback(null, UPLOAD_DIR);
+    destination: (req, file, cb) => {
+        cb(null, UPLOAD_DIR + req.body.path);
     },
-    filename: (req: Express.Request, file: Express.Multer.File, callback: (error: Error | null, filename: string) => void) => {
-        callback(null, file.originalname);
+    filename: (req, file, cb) => {
+        cb(null, file.originalname);
     }
 });
 
