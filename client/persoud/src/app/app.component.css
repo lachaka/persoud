@@ -93,41 +93,6 @@ form.search button:hover {
   background: #172815;
 }
 
-.main {
-  display: flex;
-}
-
-.vertical-menu {
-  margin-left: 20px;
-  width: 10%;
-  cursor: pointer;
-  height: calc(100vh - 80px);
-}
-
-.vertical-menu button {
-  font-size: 20px;
-  background: #3E5622;
-  color: white;
-  border: none;
-  width: 150px;
-  padding: 15px 30px;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  border-radius: 5px;
-}
-
-.vertical-menu button:hover {
-  background: #172815;
-}
-
-.vertical-menu div:hover {
-  background-color: #95B46A;
-}
-
-.vertical-menu div {
-  padding: 10px 5px;
-}
-
 footer {
   margin-top: 8px;
   display: flex;

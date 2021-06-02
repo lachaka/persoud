@@ -1,9 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { HttpEventType, HttpResponse } from '@angular/common/http';
-import { Observable } from 'rxjs';
 
 import { FileCard } from '../../models/file';
 import { UploadFilesService } from './../../services/upload-files.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-file-explorer',
@@ -12,23 +12,44 @@ import { UploadFilesService } from './../../services/upload-files.service';
 })
 
 export class FileExplorerComponent implements OnInit {
-  location: string = '/';
+  path: string = '/';
+  location: string = "cloud";
+  parrent: string[] = [];
   selectedFiles?: FileList;
   currentFile?: File;
   progress = 0;
   message = '';
   fileList: FileCard[] = [];
-
+  uploadSub: Subscription | undefined;
+  
   constructor(private uploadService: UploadFilesService) {
   }
 
   ngOnInit(): void {
-    this.uploadService.getFiles(this.location).subscribe(files => this.fileList = files );
+    this.uploadSub = this.uploadService.getFiles(this.path, this.location)
+                                .subscribe(files => this.fileList = files );
+  }
+
+  ngOnDestroy() {
+    if (this.uploadSub) {
+      this.uploadSub.unsubscribe();
+    }
   }
 
   forward(dir: string): void {
-    this.location += dir + '/';
-    this.uploadService.getFiles(this.location).subscribe(files => this.fileList = files );
+    this.parrent.push(dir);
+    this.path += dir + '/';
+    this.uploadSub = this.uploadService.getFiles(this.path, this.location)
+                                .subscribe(files => this.fileList = files );
+  }
+
+  backward(): void {
+    if (this.path.length > 1) {
+      this.path = this.path.slice(0, -this.parrent.pop().length - 1);
+
+      this.uploadSub = this.uploadService.getFiles(this.path, this.location)
+                                  .subscribe(files => this.fileList = files );
+    }
   }
 
   selectFile(event: any): void {
@@ -50,7 +71,8 @@ export class FileExplorerComponent implements OnInit {
               this.progress = Math.round(100 * event.loaded / event.total);
             } else if (event instanceof HttpResponse) {
               this.message = event.body.message;
-              this.uploadService.getFiles(this.location).subscribe(files => this.fileList = files );
+              this.uploadSub = this.uploadService.getFiles(this.path, this.location)
+                                          .subscribe(files => this.fileList = files );
             }
           },
           (err: any) => {

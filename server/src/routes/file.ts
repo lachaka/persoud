@@ -9,21 +9,21 @@ const files = express.Router();
 
 const baseUrl = 'http://localhost:3000/files/';
 
-files.get('/:filename', async (req: express.Request, res: express.Response) => {
+files.post('/:filename', async (req: express.Request, res: express.Response) => {
     const filename = req.params.filename;
-    const path = req.query.path || "";
+    const path = req.body.path;
 
     res.download(UPLOAD_DIR + path + filename);
 });
 
-files.post('/upload', upload.single('file'), async (req: express.Request, res: express.Response) => {
+files.post('/upload/:filename', upload.single('file'), async (req: express.Request, res: express.Response) => {
     res.status(200).send({ message: 'File uploaded successfully!' });
 });
 
-files.get('/', async (req: express.Request, res: express.Response) => {
-    const path = req.query.path || "";
+files.post('/', async (req: express.Request, res: express.Response) => {
+    const path = req.body.path;
     const location = UPLOAD_DIR + path;
-
+    
     fs.readdir(location, (err, files) => {
         if (err) {
             res.status(500).send({

@@ -9,7 +9,7 @@ import { FileCard } from '../models/file'
 })
 
 export class UploadFilesService {
-  private baseUrl = 'http://localhost:3000/files';
+  private baseUrl = 'http://localhost:3000/files/';
 
   constructor(private http: HttpClient) { }
 
@@ -26,7 +26,12 @@ export class UploadFilesService {
     return this.http.request(req);
   }
 
-  getFiles(location: string): Observable<FileCard[]> {
-    return this.http.get<FileCard[]>(`${this.baseUrl}?path=${ location }`);
+  getFiles(path: string, location: string) {
+    const body = {
+      path,
+      location
+    };
+    
+    return this.http.post<FileCard[]>(`${this.baseUrl}`, body);
   }
 }

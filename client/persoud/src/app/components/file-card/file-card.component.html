@@ -1,7 +1,7 @@
 <div class="file">
-    <span *ngIf="file.isDir; else notDir" class="material-icons-outlined material-icons-new">folder</span>
+    <span *ngIf="file.isDir; else notDir" class="material-icons-outlined material-icons-new file-icon">folder</span>
     <ng-template #notDir>
-        <span class="material-icons-outlined material-icons-new">description</span>
+        <span class="material-icons-outlined material-icons-new file-icon">description</span>
     </ng-template>
     <p>{{ file.name }}</p>
 </div>

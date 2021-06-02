@@ -7,9 +7,13 @@ p {
     text-overflow: ellipsis;
 }
 
-span {
+.file-icon {
     margin: auto;
     display: block;
+}
+
+.download {
+    display: inline;
 }
 
  .material-icons-new {
