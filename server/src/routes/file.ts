@@ -9,14 +9,14 @@ const files = express.Router();
 
 const baseUrl = 'http://localhost:3000/files/';
 
-files.post('/:filename', async (req: express.Request, res: express.Response) => {
-    const filename = req.params.filename;
+files.post('/download', async (req: express.Request, res: express.Response) => {
+    const filename = req.body.filename;
     const path = req.body.path;
 
     res.download(UPLOAD_DIR + path + filename);
 });
 
-files.post('/upload/:filename', upload.single('file'), async (req: express.Request, res: express.Response) => {
+files.post('/upload', upload.single('file'), async (req: express.Request, res: express.Response) => {
     res.status(200).send({ message: 'File uploaded successfully!' });
 });
 
@@ -44,14 +44,5 @@ files.post('/', async (req: express.Request, res: express.Response) => {
         res.status(200).send(filesInfo);
     });
 });
-
-// files.post("/images", upload.array("files", 4), (req, res) =>{
-//     try {
-//       res.send(req.files);
-//     } catch (error) {
-//       console.log(error);
-//       res.send(400);
-//     }
-//   });
 
 export default files;

@@ -6,6 +6,7 @@ import { MatDialogModule } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatInputModule } from '@angular/material/input';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { NgxMatFileInputModule } from '@angular-material-components/file-input';
 
 import { AppComponent } from './app.component';
@@ -35,6 +36,8 @@ const routes: Routes = [];
     MatButtonModule,
     MatProgressBarModule,
     MatInputModule,
+    FormsModule,
+    ReactiveFormsModule,
     NgxMatFileInputModule
   ],
   providers: [],

@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpRequest, HttpEvent } from '@angular/common/http';
-import { Observable } from 'rxjs';
 
 import { FileCard } from '../models/file'
 
@@ -15,18 +14,12 @@ export class UploadFilesService {
 
   upload(file: File, path: string) {
     const formData: FormData = new FormData();
-    formData.append('file', file);
     formData.append('path', path);
+    formData.append('file', file);
 
-    console.log("service");
-    // const req = new HttpRequest('POST', `${this.baseUrl}/upload`, formData, {
-    //   reportProgress: true,
-    //   responseType: 'json'
-    // });
-
-    // return this.http.request(req);
     return this.http.post(`${this.baseUrl}/upload`, formData, {
       reportProgress: true,
+      observe: 'events',
       responseType: 'json'
     });
   }

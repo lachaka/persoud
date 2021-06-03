@@ -130,3 +130,4 @@ dist
 # compiled output  
 /dist  
 /tmp  
+server/uploads

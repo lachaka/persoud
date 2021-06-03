@@ -1,19 +1,18 @@
 import { UploadFileDialogComponent } from './../upload-file-dialog/upload-file-dialog.component';
 import { Component, OnInit } from '@angular/core';
-import { MatDialog } from '@angular/material/dialog';
-
 import { HttpEventType, HttpResponse } from '@angular/common/http';
+import { Subscription } from 'rxjs';
+import { MatDialog } from '@angular/material/dialog';
 
 import { FileCard } from '../../models/file';
 import { UploadFilesService } from './../../services/upload-files.service';
-import { Subscription } from 'rxjs';
+
 
 @Component({
   selector: 'app-file-explorer',
   templateUrl: './file-explorer.component.html',
   styleUrls: ['./file-explorer.component.css']
 })
-
 export class FileExplorerComponent implements OnInit {
   path: string = '/';
   location: string = "cloud";
@@ -42,7 +41,14 @@ export class FileExplorerComponent implements OnInit {
       }
     };
 
-    this.dialog.open(UploadFileDialogComponent, data);
+    let dialogRef = this.dialog.open(UploadFileDialogComponent, data);
+
+    dialogRef.afterClosed().subscribe(res => {
+      if (res) {  
+        console.log("add new files to the list");
+      }
+    });
+
   }
 
   forward(dir: string): void {
