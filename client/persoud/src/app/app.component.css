@@ -93,34 +93,6 @@ form.search button:hover {
   background: #172815;
 }
 
-.file {
-  border: 1px solid;
-  border-radius: 5px;
-  border-color: lightgray;
-  box-shadow: 0 3px 5px 0 rgba(0, 0, 0, 0.19);
-  margin: 10px;
-  width: 15%;
-  transition: all 0.2s ease;
-  position: relative;
-  top: 0;
-  cursor: pointer;
-}
-
-.file:hover {
-  position: relative;
-  top: -10px;
-  box-shadow: 0 10px 20px 0 rgba(0, 0, 0, 0.10);
-}
-
-.content {
-  height: calc(100vh - 80px);
-  display: flex;
-  flex-wrap: wrap;
-  margin: auto;
-  width: 85%;
-  overflow: auto;
-}
-
 footer {
   margin-top: 8px;
   display: flex;
