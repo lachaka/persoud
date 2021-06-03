@@ -45,4 +45,17 @@ files.post('/', async (req: express.Request, res: express.Response) => {
     });
 });
 
+files.post('/folder', async (req: express.Request, res: express.Response) => {
+    const folder = req.body.folder;
+    const path = req.body.path;
+
+    await fs.promises.mkdir(UPLOAD_DIR + path + folder ).then(() => {
+        res.status(200).send({ message: 'Folder created successfully!' });
+    }).catch (error => {
+        res.status(500).send({ error });
+        console.log(error);
+    });
+});
+
+
 export default files;
