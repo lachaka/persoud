@@ -31,16 +31,13 @@ files.post('/', async (req: express.Request, res: express.Response) => {
             });
         }
 
-        let filesInfo = [];
-        files.forEach((file) => {
-            filesInfo.push({
-                name: file,
-                url: baseUrl + file + "?path=" + path,
-                size: fs.statSync(location).size,
-                isDir: fs.statSync(location + file).isDirectory()
-            });
-        });
-        
+        const filesInfo = files.map(file => ({
+            name: file,
+            path: path,
+            size: fs.statSync(location).size,
+            isDir: fs.statSync(location + file).isDirectory()
+        }));
+                
         res.status(200).send(filesInfo);
     });
 });
@@ -49,12 +46,27 @@ files.post('/folder', async (req: express.Request, res: express.Response) => {
     const folder = req.body.folder;
     const path = req.body.path;
 
-    await fs.promises.mkdir(UPLOAD_DIR + path + folder ).then(() => {
+    fs.promises.mkdir(UPLOAD_DIR + path + folder ).then(() => {
         res.status(200).send({ message: 'Folder created successfully!' });
-    }).catch (error => {
-        res.status(500).send({ error });
-        console.log(error);
+    }).catch (err => {
+        res.status(500).send({ err });
     });
+});
+
+files.post('/delete', async (req: express.Request, res: express.Response) => {
+    const file = req.body;
+    
+    if (file.isDir) {
+        fs.rmdirSync(UPLOAD_DIR + file.path + file.name, { recursive: true });
+        // TODO should be async
+    } else {
+        fs.promises.unlink(UPLOAD_DIR + file.path + file.name).then(() => {
+            res.status(200).send({message: 'File is deleted'});
+        }).catch(err => {
+            res.status(500).send({err});
+        });
+    }
+        
 });
 
 

@@ -1,13 +1,12 @@
-import { NewFolderDialogComponent } from './../../dialogs/new-folder-dialog/new-folder-dialog.component';
-import { UploadFileDialogComponent } from '../../dialogs/upload-file-dialog/upload-file-dialog.component';
-import { Component, OnInit } from '@angular/core';
-import { HttpEventType, HttpResponse, JsonpClientBackend } from '@angular/common/http';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { MatDialog } from '@angular/material/dialog';
+import { MatMenuTrigger } from '@angular/material/menu';
 
 import { FileCard } from '../../models/file';
+import { NewFolderDialogComponent } from './../../dialogs/new-folder-dialog/new-folder-dialog.component';
+import { UploadFileDialogComponent } from '../../dialogs/upload-file-dialog/upload-file-dialog.component';
 import { UploadFilesService } from './../../services/upload-files.service';
-
 
 @Component({
   selector: 'app-file-explorer',
@@ -21,6 +20,10 @@ export class FileExplorerComponent implements OnInit {
   fileList: FileCard[] = [];
   uploadSub: Subscription | undefined;
   
+  @ViewChild(MatMenuTrigger) contextMenu: MatMenuTrigger;
+
+  contextMenuPosition = { x: '0px', y: '0px' };
+
   constructor(public dialog: MatDialog, private uploadService: UploadFilesService) {}
 
   ngOnInit(): void {
@@ -84,7 +87,39 @@ export class FileExplorerComponent implements OnInit {
     }
   }
 
-  trackByName(index, file) {
+  trackByName(index, file: FileCard) {
     return index;
+  }
+
+  onRightClick(event: MouseEvent, file: FileCard) {
+    event.preventDefault();
+
+    this.contextMenuPosition.x = event.clientX + 'px';
+    this.contextMenuPosition.y = event.clientY + 'px';
+    this.contextMenu.menuData = { 'file': file };
+    this.contextMenu.openMenu();
+  }
+
+  onContextMenuShare(file: FileCard) {
+    console.log(file);
+  }
+
+  onContextMenuDownload(file: FileCard) {
+    console.log(file);
+  }
+  
+  onContextMenuRemove(file: FileCard) {
+    this.uploadSub = this.uploadService.deleteFile(file)
+                      .subscribe(() => {
+                        this.fileList = this.fileList.filter(f => f.name !== file.name);
+                      console.log(file)});
+  }
+
+  myFiles(): void {
+
+  }
+
+  sharedFiles(): void {
+
   }
 }

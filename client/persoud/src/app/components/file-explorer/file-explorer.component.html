@@ -1,21 +1,69 @@
-<button mat-raised-button color="primary" (click)="openUploadDialog()">Upload</button>
-
-<button mat-raised-button color="primary" (click)="createFolderDialog()">
-  <span class="material-icons-outlined">create_new_folder</span>
-</button>
-
-<div class="card-header">
-  <span class="material-icons-outlined mio" (click)="backward()">arrow_back</span>
-  Current directory: {{ path }} 
-</div>
-
-<div class="content" role="main">  
-  <ng-container *ngFor="let file of fileList;trackBy: trackByName">
-    <div class="file">
-      <app-file-card [file]="file" *ngIf="file.isDir; else notDir" (click)="forward(file.name)"></app-file-card>
-      <ng-template  #notDir>
-        <app-file-card [file]="file"></app-file-card>
-      </ng-template>
+<div class="main">
+  <div class="side-nav">
+    <mat-selection-list #shoes [multiple]="false">
+      <mat-list-option>
+        <div class="nav-item">
+          <span class="material-icons-outlined">cloud</span>My files
+        </div>
+      </mat-list-option>
+      <mat-list-option class="nav-item">
+        <div class="nav-item">
+          <span class="material-icons-outlined">folder_shared</span>Shared files
+        </div>
+      </mat-list-option>
+    </mat-selection-list>
+  </div>
+  <div class="explorer">
+    <div class="card-header">
+      <div>
+        <span class="material-icons-outlined mio" (click)="backward()">arrow_back</span>
+        Current directory: {{ path }} 
+      </div>
+      <div>
+        <button mat-button (click)="openUploadDialog()">
+          <span class="material-icons-outlined">file_upload</span>
+          Upload
+        </button>
+        
+        <button mat-button (click)="createFolderDialog()">
+          <span class="material-icons-outlined">create_new_folder</span>
+          New folder
+        </button>
+      </div>
     </div>
-  </ng-container>
+
+    <div class="content" role="main">  
+      <ng-container *ngFor="let file of fileList;trackBy: trackByName">
+        <div class="file">
+          <app-file-card [file]="file" *ngIf="file.isDir; else notDir" (click)="forward(file.name)" (contextmenu)="onRightClick($event, file)"></app-file-card>
+          <ng-template  #notDir>
+            <app-file-card [file]="file" (contextmenu)="onRightClick($event, file)"></app-file-card>
+          </ng-template>
+        </div>
+      </ng-container>
+    </div>
+  </div>
 </div>
+
+<!-- Hidden div -->
+<div style="visibility: hidden; position: fixed;"
+[style.left]="contextMenuPosition.x"
+[style.top]="contextMenuPosition.y"
+[matMenuTriggerFor]="rightMenu"></div>
+
+<mat-menu #rightMenu="matMenu">
+	<ng-template matMenuContent let-file="file">
+		<button mat-menu-item (click)="onContextMenuShare(file)">
+      <span class="material-icons-outlined">share</span>
+        Share
+      </button>
+		<button mat-menu-item (click)="onContextMenuDownload(file)">
+      <span class="material-icons-outlined">file_download</span>
+        Download
+      </button>
+		<button mat-menu-item (click)="onContextMenuRemove(file)">
+      <span class="material-icons-outlined">delete</span>
+        Delete
+      </button>
+	</ng-template>
+</mat-menu>

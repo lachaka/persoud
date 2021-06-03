@@ -41,4 +41,9 @@ export class UploadFilesService {
     
     return this.http.post(`${this.baseUrl}/folder`, body);
   }
+
+  deleteFile(file: FileCard) {
+    console.log(file);
+    return this.http.post(`${this.baseUrl}/delete`, file);
+  }
 }

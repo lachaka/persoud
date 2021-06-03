@@ -7,6 +7,8 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatInputModule } from '@angular/material/input';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { MatMenuModule } from '@angular/material/menu';
+import { MatListModule } from '@angular/material/list'
 import { NgxMatFileInputModule } from '@angular-material-components/file-input';
 
 import { AppComponent } from './app.component';
@@ -15,6 +17,7 @@ import { FileExplorerComponent } from './components/file-explorer/file-explorer.
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { UploadFileDialogComponent } from './dialogs/upload-file-dialog/upload-file-dialog.component';
 import { NewFolderDialogComponent } from './dialogs/new-folder-dialog/new-folder-dialog.component';
+import { ShareWithDialogComponent } from './components/share-with-dialog/share-with-dialog.component';
 
 const routes: Routes = [];
 
@@ -24,7 +27,8 @@ const routes: Routes = [];
     FileCardComponent,
     FileExplorerComponent,
     UploadFileDialogComponent,
-    NewFolderDialogComponent
+    NewFolderDialogComponent,
+    ShareWithDialogComponent
   ],
   entryComponents: [ 
     UploadFileDialogComponent
@@ -40,6 +44,8 @@ const routes: Routes = [];
     MatInputModule,
     FormsModule,
     ReactiveFormsModule,
+    MatMenuModule,
+    MatListModule,
     NgxMatFileInputModule
   ],
   providers: [],
