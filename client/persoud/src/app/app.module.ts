@@ -13,7 +13,8 @@ import { AppComponent } from './app.component';
 import { FileCardComponent } from './components/file-card/file-card.component';
 import { FileExplorerComponent } from './components/file-explorer/file-explorer.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { UploadFileDialogComponent } from './components/upload-file-dialog/upload-file-dialog.component';
+import { UploadFileDialogComponent } from './dialogs/upload-file-dialog/upload-file-dialog.component';
+import { NewFolderDialogComponent } from './dialogs/new-folder-dialog/new-folder-dialog.component';
 
 const routes: Routes = [];
 
@@ -22,7 +23,8 @@ const routes: Routes = [];
     AppComponent,
     FileCardComponent,
     FileExplorerComponent,
-    UploadFileDialogComponent
+    UploadFileDialogComponent,
+    NewFolderDialogComponent
   ],
   entryComponents: [ 
     UploadFileDialogComponent

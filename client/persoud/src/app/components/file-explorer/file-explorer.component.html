@@ -1,12 +1,16 @@
 <button mat-raised-button color="primary" (click)="openUploadDialog()">Upload</button>
 
+<button mat-raised-button color="primary" (click)="createFolderDialog()">
+  <span class="material-icons-outlined">create_new_folder</span>
+</button>
+
 <div class="card-header">
   <span class="material-icons-outlined mio" (click)="backward()">arrow_back</span>
   Current directory: {{ path }} 
 </div>
 
 <div class="content" role="main">  
-  <ng-container *ngFor="let file of fileList">
+  <ng-container *ngFor="let file of fileList;trackBy: trackByName">
     <div class="file">
       <app-file-card [file]="file" *ngIf="file.isDir; else notDir" (click)="forward(file.name)"></app-file-card>
       <ng-template  #notDir>

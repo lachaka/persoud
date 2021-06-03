@@ -1,6 +1,6 @@
 export class FileCard {
     name: string;
-    url: string;
+    path: string;
     size: number;
     isDir: boolean;
 }

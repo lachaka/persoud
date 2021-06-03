@@ -32,4 +32,13 @@ export class UploadFilesService {
     
     return this.http.post<FileCard[]>(`${this.baseUrl}`, body);
   }
+
+  createFolder(folder: string, path: string) {
+    const body = {
+      folder,
+      path
+    }
+    
+    return this.http.post(`${this.baseUrl}/folder`, body);
+  }
 }

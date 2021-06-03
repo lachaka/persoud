@@ -1,6 +1,7 @@
-import { UploadFileDialogComponent } from './../upload-file-dialog/upload-file-dialog.component';
+import { NewFolderDialogComponent } from './../../dialogs/new-folder-dialog/new-folder-dialog.component';
+import { UploadFileDialogComponent } from '../../dialogs/upload-file-dialog/upload-file-dialog.component';
 import { Component, OnInit } from '@angular/core';
-import { HttpEventType, HttpResponse } from '@angular/common/http';
+import { HttpEventType, HttpResponse, JsonpClientBackend } from '@angular/common/http';
 import { Subscription } from 'rxjs';
 import { MatDialog } from '@angular/material/dialog';
 
@@ -48,7 +49,23 @@ export class FileExplorerComponent implements OnInit {
         console.log("add new files to the list");
       }
     });
+  }
 
+  createFolderDialog() {
+    let dialogRef = this.dialog.open(NewFolderDialogComponent);
+
+    dialogRef.afterClosed().subscribe((folder: string) => {
+      console.log(folder);
+      if (folder.length > 0) {
+        this.uploadService.createFolder(folder, this.path).subscribe(res => {
+          console.log(res);
+        }, error => {
+          console.log(error);
+        }, () => {
+          this.fileList.push({ name: folder, path: this.path, size: 0, isDir: true});
+        });
+      }
+    });
   }
 
   forward(dir: string): void {
@@ -65,5 +82,9 @@ export class FileExplorerComponent implements OnInit {
       this.uploadSub = this.uploadService.getFiles(this.path, this.location)
                                   .subscribe(files => this.fileList = files );
     }
+  }
+
+  trackByName(index, file) {
+    return index;
   }
 }
