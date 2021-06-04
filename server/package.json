@@ -4,7 +4,7 @@
   "description": "",
   "main": "server.ts",
   "scripts": {
-    "start": "ts-node src/server.ts",
+    "start": "ts-node-dev src/index.ts",
     "test": "test"
   },
   "author": "",
@@ -18,11 +18,12 @@
     "typescript": "^4.2.4"
   },
   "dependencies": {
-    "mongodb": "^3.6.9",
-    "mongoose": "^5.12.12",
+    "@types/multer": "^1.4.5",
+    "archiver": "^5.3.0",
     "cors": "^2.8.5",
     "dotenv": "^10.0.0",
-    "multer": "^1.4.2",
-    "@types/multer": "^1.4.5"
+    "mongodb": "^3.6.9",
+    "mongoose": "^5.12.12",
+    "multer": "^1.4.2"
   }
 }

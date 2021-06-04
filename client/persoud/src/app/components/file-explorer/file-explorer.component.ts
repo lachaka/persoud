@@ -2,54 +2,59 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { MatDialog } from '@angular/material/dialog';
 import { MatMenuTrigger } from '@angular/material/menu';
+import * as fileSaver from 'file-saver-es';
 
 import { FileCard } from '../../models/file';
 import { NewFolderDialogComponent } from './../../dialogs/new-folder-dialog/new-folder-dialog.component';
 import { UploadFileDialogComponent } from '../../dialogs/upload-file-dialog/upload-file-dialog.component';
-import { UploadFilesService } from './../../services/upload-files.service';
+import { FileManagerService } from '../../services/file-manager.service';
 
 @Component({
   selector: 'app-file-explorer',
   templateUrl: './file-explorer.component.html',
-  styleUrls: ['./file-explorer.component.css']
+  styleUrls: ['./file-explorer.component.css'],
 })
 export class FileExplorerComponent implements OnInit {
   path: string = '/';
-  location: string = "cloud";
+  location: string = 'cloud';
   parrent: string[] = [];
   fileList: FileCard[] = [];
-  uploadSub: Subscription | undefined;
-  
+  fileManagerSub: Subscription | undefined;
+
   @ViewChild(MatMenuTrigger) contextMenu: MatMenuTrigger;
 
   contextMenuPosition = { x: '0px', y: '0px' };
 
-  constructor(public dialog: MatDialog, private uploadService: UploadFilesService) {}
+  constructor(
+    public dialog: MatDialog,
+    private fileService: FileManagerService
+  ) {}
 
   ngOnInit(): void {
-    this.uploadSub = this.uploadService.getFiles(this.path, this.location)
-                                .subscribe(files => this.fileList = files );
+    this.fileManagerSub = this.fileService
+      .listFiles(this.path, this.location)
+      .subscribe((files) => (this.fileList = files));
   }
 
   ngOnDestroy() {
-    if (this.uploadSub) {
-      this.uploadSub.unsubscribe();
+    if (this.fileManagerSub) {
+      this.fileManagerSub.unsubscribe();
     }
   }
 
   openUploadDialog() {
-    const data = { 
+    const data = {
       data: {
-        uploadService: this.uploadService,
-        path: this.path
-      }
+        uploadService: this.fileService,
+        path: this.path,
+      },
     };
 
     let dialogRef = this.dialog.open(UploadFileDialogComponent, data);
 
-    dialogRef.afterClosed().subscribe(res => {
-      if (res) {  
-        console.log("add new files to the list");
+    dialogRef.afterClosed().subscribe((res) => {
+      if (res) {
+        console.log('add new files to the list');
       }
     });
   }
@@ -60,13 +65,22 @@ export class FileExplorerComponent implements OnInit {
     dialogRef.afterClosed().subscribe((folder: string) => {
       console.log(folder);
       if (folder.length > 0) {
-        this.uploadService.createFolder(folder, this.path).subscribe(res => {
-          console.log(res);
-        }, error => {
-          console.log(error);
-        }, () => {
-          this.fileList.push({ name: folder, path: this.path, size: 0, isDir: true});
-        });
+        this.fileService.createFolder(folder, this.path).subscribe(
+          (res) => {
+            console.log(res);
+          },
+          (error) => {
+            console.log(error);
+          },
+          () => {
+            this.fileList.push({
+              name: folder,
+              path: this.path,
+              size: 0,
+              isDir: true,
+            });
+          }
+        );
       }
     });
   }
@@ -74,16 +88,18 @@ export class FileExplorerComponent implements OnInit {
   forward(dir: string): void {
     this.parrent.push(dir);
     this.path += dir + '/';
-    this.uploadSub = this.uploadService.getFiles(this.path, this.location)
-                                .subscribe(files => this.fileList = files );
+    this.fileManagerSub = this.fileService
+      .listFiles(this.path, this.location)
+      .subscribe((files) => (this.fileList = files));
   }
 
   backward(): void {
     if (this.path.length > 1) {
       this.path = this.path.slice(0, -this.parrent.pop().length - 1);
 
-      this.uploadSub = this.uploadService.getFiles(this.path, this.location)
-                                  .subscribe(files => this.fileList = files );
+      this.fileManagerSub = this.fileService
+        .listFiles(this.path, this.location)
+        .subscribe((files) => (this.fileList = files));
     }
   }
 
@@ -96,7 +112,7 @@ export class FileExplorerComponent implements OnInit {
 
     this.contextMenuPosition.x = event.clientX + 'px';
     this.contextMenuPosition.y = event.clientY + 'px';
-    this.contextMenu.menuData = { 'file': file };
+    this.contextMenu.menuData = { file: file };
     this.contextMenu.openMenu();
   }
 
@@ -105,21 +121,24 @@ export class FileExplorerComponent implements OnInit {
   }
 
   onContextMenuDownload(file: FileCard) {
-    console.log(file);
+    this.fileService.downloadFile(file).subscribe(res => {
+      const contentDisposition = res.headers.get('content-disposition');
+      const filename = contentDisposition.split(';')[1].split('=')[1].trim();
+      const blob: any = new Blob([res.body]);
+      
+      fileSaver.saveAs(blob, filename);
+    }, err => {
+      console.log(err);
+    });
   }
-  
+
   onContextMenuRemove(file: FileCard) {
-    this.uploadSub = this.uploadService.deleteFile(file)
-                      .subscribe(() => {
-                        this.fileList = this.fileList.filter(f => f.name !== file.name);
-                      console.log(file)});
+    this.fileManagerSub = this.fileService.deleteFile(file).subscribe(() => {
+      this.fileList = this.fileList.filter((f) => f.name !== file.name);
+    });
   }
 
-  myFiles(): void {
+  myFiles(): void {}
 
-  }
-
-  sharedFiles(): void {
-
-  }
+  sharedFiles(): void {}
 }

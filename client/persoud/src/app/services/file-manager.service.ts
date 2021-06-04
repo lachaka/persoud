@@ -1,16 +1,15 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpRequest, HttpEvent } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 
-import { FileCard } from '../models/file'
+import { FileCard } from '../models/file';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
-
-export class UploadFilesService {
+export class FileManagerService {
   private baseUrl = 'http://localhost:3000/files';
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient) {}
 
   upload(file: File, path: string) {
     const formData: FormData = new FormData();
@@ -20,30 +19,36 @@ export class UploadFilesService {
     return this.http.post(`${this.baseUrl}/upload`, formData, {
       reportProgress: true,
       observe: 'events',
-      responseType: 'json'
+      responseType: 'json',
     });
   }
 
-  getFiles(path: string, location: string) {
+  listFiles(path: string, location: string) {
     const body = {
       path,
-      location
+      location,
     };
-    
+
     return this.http.post<FileCard[]>(`${this.baseUrl}`, body);
   }
 
   createFolder(folder: string, path: string) {
     const body = {
       folder,
-      path
-    }
-    
+      path,
+    };
+
     return this.http.post(`${this.baseUrl}/folder`, body);
   }
 
   deleteFile(file: FileCard) {
-    console.log(file);
     return this.http.post(`${this.baseUrl}/delete`, file);
+  }
+
+  downloadFile(file: FileCard) {
+    return this.http.post(`${this.baseUrl}/download`, file, {
+      observe: 'response',
+      responseType: 'blob',
+    });
   }
 }
