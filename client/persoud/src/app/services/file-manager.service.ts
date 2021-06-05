@@ -51,4 +51,13 @@ export class FileManagerService {
       responseType: 'blob',
     });
   }
+
+  shareFile(file: FileCard, email: string) {
+    const body = {
+      file,
+      email
+    };
+
+    return this.http.post(`${this.baseUrl}/share`, body);
+  }
 }

@@ -6,6 +6,8 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./share-with-dialog.component.css']
 })
 export class ShareWithDialogComponent implements OnInit {
+  
+  email: string;
 
   constructor() { }
 

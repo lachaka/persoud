@@ -1,3 +1,4 @@
+import { ShareWithDialogComponent } from './../share-with-dialog/share-with-dialog.component';
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { MatDialog } from '@angular/material/dialog';
@@ -15,11 +16,11 @@ import { FileManagerService } from '../../services/file-manager.service';
   styleUrls: ['./file-explorer.component.css'],
 })
 export class FileExplorerComponent implements OnInit {
-  path: string = '/';
-  location: string = 'cloud';
-  parrent: string[] = [];
-  fileList: FileCard[] = [];
-  fileManagerSub: Subscription | undefined;
+  path: string;
+  location: string;
+  parrent: string[];
+  fileList: FileCard[];
+  unsubscriber: Subscription[];
 
   @ViewChild(MatMenuTrigger) contextMenu: MatMenuTrigger;
 
@@ -28,18 +29,22 @@ export class FileExplorerComponent implements OnInit {
   constructor(
     public dialog: MatDialog,
     private fileService: FileManagerService
-  ) {}
+  ) {
+    this.path = '/';
+    this.location = 'personal';
+    this.parrent = [];
+    this.fileList = [];
+    this.unsubscriber = [];
+  }
 
   ngOnInit(): void {
-    this.fileManagerSub = this.fileService
+    this.unsubscriber.push(this.fileService
       .listFiles(this.path, this.location)
-      .subscribe((files) => (this.fileList = files));
+      .subscribe((files) => (this.fileList = files)));
   }
 
   ngOnDestroy() {
-    if (this.fileManagerSub) {
-      this.fileManagerSub.unsubscribe();
-    }
+    this.unsubscriber.forEach(sub => sub.unsubscribe());
   }
 
   openUploadDialog() {
@@ -50,22 +55,29 @@ export class FileExplorerComponent implements OnInit {
       },
     };
 
-    let dialogRef = this.dialog.open(UploadFileDialogComponent, data);
+    const dialogRef = this.dialog.open(UploadFileDialogComponent, data);
 
-    dialogRef.afterClosed().subscribe((res) => {
+    this.unsubscriber.push(dialogRef.afterClosed().subscribe((res) => {
       if (res) {
-        console.log('add new files to the list');
+        res.forEach(file => {
+          this.fileList.push({
+            name: file.name,
+            path: this.path,
+            size: file.size,
+            isDir: false
+          });
+        });
       }
-    });
+    }));
   }
 
   createFolderDialog() {
-    let dialogRef = this.dialog.open(NewFolderDialogComponent);
+    const dialogRef = this.dialog.open(NewFolderDialogComponent);
 
-    dialogRef.afterClosed().subscribe((folder: string) => {
+    this.unsubscriber.push(dialogRef.afterClosed().subscribe((folder: string) => {
       console.log(folder);
       if (folder.length > 0) {
-        this.fileService.createFolder(folder, this.path).subscribe(
+        this.unsubscriber.push(this.fileService.createFolder(folder, this.path).subscribe(
           (res) => {
             console.log(res);
           },
@@ -80,26 +92,28 @@ export class FileExplorerComponent implements OnInit {
               isDir: true,
             });
           }
-        );
+        ));
       }
-    });
+    }));
   }
 
   forward(dir: string): void {
     this.parrent.push(dir);
     this.path += dir + '/';
-    this.fileManagerSub = this.fileService
+
+    this.unsubscriber.push(this.fileService
       .listFiles(this.path, this.location)
-      .subscribe((files) => (this.fileList = files));
+      .subscribe((files) => (this.fileList = files)));  
+
   }
 
   backward(): void {
     if (this.path.length > 1) {
       this.path = this.path.slice(0, -this.parrent.pop().length - 1);
 
-      this.fileManagerSub = this.fileService
+      this.unsubscriber.push(this.fileService
         .listFiles(this.path, this.location)
-        .subscribe((files) => (this.fileList = files));
+        .subscribe((files) => (this.fileList = files)));
     }
   }
 
@@ -117,7 +131,17 @@ export class FileExplorerComponent implements OnInit {
   }
 
   onContextMenuShare(file: FileCard) {
-    console.log(file);
+    const dialogRef = this.dialog.open(ShareWithDialogComponent);
+
+    this.unsubscriber.push(dialogRef.afterClosed().subscribe((email: string) => {
+      if (email.length > 0) {
+        this.unsubscriber.push(this.fileService.shareFile(file, email).subscribe(
+          (error) => {
+            console.log(error);
+          }
+        ));
+      }
+    })); 
   }
 
   onContextMenuDownload(file: FileCard) {
@@ -133,12 +157,16 @@ export class FileExplorerComponent implements OnInit {
   }
 
   onContextMenuRemove(file: FileCard) {
-    this.fileManagerSub = this.fileService.deleteFile(file).subscribe(() => {
+    this.unsubscriber.push(this.fileService.deleteFile(file).subscribe(() => {
       this.fileList = this.fileList.filter((f) => f.name !== file.name);
-    });
+    }));
   }
 
-  myFiles(): void {}
+  myFiles(): void {
+    
+  }
 
-  sharedFiles(): void {}
+  sharedFiles(): void {
+
+  }
 }
