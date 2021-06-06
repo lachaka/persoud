@@ -3,9 +3,7 @@ import * as fs from "fs";
 import * as achiver from 'archiver';
 
 import upload from "../config/multer-config";
-import { callbackify } from "util";
 
-require("dotenv").config();
 const UPLOAD_DIR = process.env.UPLOAD_DIR;
 const TEMP_DIR = process.env.TEMP_DIR;
 
