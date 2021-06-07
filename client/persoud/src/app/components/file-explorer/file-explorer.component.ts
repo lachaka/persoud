@@ -1,4 +1,4 @@
-import { ShareWithDialogComponent } from './../share-with-dialog/share-with-dialog.component';
+import { ShareWithDialogComponent } from '../../modals/share-with-dialog/share-with-dialog.component';
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { MatDialog } from '@angular/material/dialog';
@@ -6,8 +6,8 @@ import { MatMenuTrigger } from '@angular/material/menu';
 import * as fileSaver from 'file-saver-es';
 
 import { FileCard } from '../../models/file';
-import { NewFolderDialogComponent } from './../../dialogs/new-folder-dialog/new-folder-dialog.component';
-import { UploadFileDialogComponent } from '../../dialogs/upload-file-dialog/upload-file-dialog.component';
+import { NewFolderDialogComponent } from '../../modals/new-folder-dialog/new-folder-dialog.component';
+import { UploadFileDialogComponent } from '../../modals/upload-file-dialog/upload-file-dialog.component';
 import { FileManagerService } from '../../services/file-manager.service';
 
 @Component({

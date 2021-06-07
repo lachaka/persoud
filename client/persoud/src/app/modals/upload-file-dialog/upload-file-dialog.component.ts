@@ -76,4 +76,13 @@ export class UploadFileDialogComponent implements OnInit {
       );
     }
   }
+
+  removeFileUpload(file) {
+    this.files = this.files.filter(f => f != file);
+  }
+
+  trackById(index) {
+    return index;
+  }
+
 }

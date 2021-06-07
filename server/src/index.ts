@@ -1,9 +1,10 @@
 import * as express from 'express';
 import * as cors from 'cors';
 
-import routes from './routes/index';
+require('dotenv').config();
 
-require('dotenv').config(); 
+import sequelize from './db/index';
+import routes from './routes/index';
 
 const SERVER_PORT = process.env.SERVER_PORT || 3001;
 
@@ -14,6 +15,15 @@ app.use(express.json());
 
 app.use(routes);
 
-app.listen(SERVER_PORT, () => {
-    console.log(`Server is listening on port ${SERVER_PORT}`);
-});
+sequelize
+  .authenticate()
+  .then(() => {
+    sequelize.sync();
+
+    app.listen(SERVER_PORT, () => {
+      console.log(`Server is listening on port ${SERVER_PORT}`);
+    });
+  })
+  .catch((err) => {
+    console.error('Database connection error:', err);
+  });
