@@ -1,22 +1,19 @@
-import { DataTypes } from 'sequelize';
-import sequelize from '../db/index';
+import { Schema, model } from "mongoose";
 
-
-const User = sequelize.define('users', {
-    id: {
-        type: DataTypes.UUID,
-        defaultValue: DataTypes.UUIDV4,
-        allowNull: false,
-        primaryKey: true,
-    },
-    email: {
-        type: DataTypes.STRING,
-        allowNull: false
-    },
-    password: {
-        type: DataTypes.STRING,
-        allowNull: false
-    }
+const userSchema = new Schema({
+  email: {
+    type: String,
+    requeired: true,
+  },
+  password: {
+    type: String,
+    required: true,
+  },
+  // files: []
 });
+
+const User = model("User", userSchema);
+
+export { userSchema };
 
 export default User;
