@@ -22,9 +22,9 @@
     "archiver": "^5.3.0",
     "cors": "^2.8.5",
     "dotenv": "^10.0.0",
+    "mongodb": "^3.6.9",
+    "mongoose": "^5.12.13",
     "multer": "^1.4.2",
-    "mysql2": "^2.2.5",
-    "sequelize": "^6.6.2",
     "uuid": "^8.3.2"
   }
 }
