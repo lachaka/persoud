@@ -1,0 +1,34 @@
+<h2>Upload files</h2>
+<mat-dialog-content>
+  <mat-form-field>
+      <ngx-mat-file-input [formControl]="selectedFiles" [multiple]="true"></ngx-mat-file-input>
+      <mat-hint>{{files.length}} selected file(s)</mat-hint>
+  </mat-form-field>
+ 
+  <div class="title">Selected file(s):</div>
+  <div class="items">
+    <ul>
+      <li *ngFor="let item of files; trackBy: trackById">
+        {{item?.name}}
+        <span class="material-icons-outlined close-file" (click)="removeFileUpload(item)">close</span>
+      </li>
+    </ul>
+  </div>
+
+  <div>
+    <button mat-raised-button color="primary"
+            [disabled]="!selectedFiles"
+            (click)="uploadFiles()">
+        <span class="material-icons-outlined">file_upload</span>Upload
+      </button>
+  </div>
+  <div *ngFor="let progressInfo of progressInfos" class="mb-2">
+      <span>{{ progressInfo.fileName }}</span>
+      <mat-progress-bar mode="determinate" value="{{ progressInfo.value }}"></mat-progress-bar>
+  </div>
+</mat-dialog-content>
+
+<mat-dialog-actions>
+  <button mat-raised-button color="primary" [mat-dialog-close]="files">Done</button>
+  <button mat-raised-button color="primary" mat-dialog-close>Cancel</button>
+</mat-dialog-actions>

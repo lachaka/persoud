@@ -1,27 +1,29 @@
 import * as express from 'express';
 import * as cors from 'cors';
 
-import routes from './routes/index';
-import connectDb from './db/index';
-
 require('dotenv').config();
+
+import sequelize from './db/index';
+import routes from './routes/index';
 
 const SERVER_PORT = process.env.SERVER_PORT || 3001;
 
 const app = express();
 
-app.use(cors({ origin:true, credentials: true }));
+app.use(cors({ origin: true, credentials: true }));
 app.use(express.json());
 
 app.use(routes);
 
-connectDb()
+sequelize
+  .authenticate()
   .then(() => {
-    console.log('Database connection successfull');
+    sequelize.sync();
 
     app.listen(SERVER_PORT, () => {
       console.log(`Server is listening on port ${SERVER_PORT}`);
     });
   })
-  .catch((err) => console.error('Database connection error'));
-
+  .catch((err) => {
+    console.error('Database connection error:', err);
+  });

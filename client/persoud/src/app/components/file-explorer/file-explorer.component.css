@@ -1,48 +1,17 @@
-
 .card-header {
-    margin: auto;
-    width: 90%;
     font-size: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 20px 10px 20px;
 }
 
 .mio {
     cursor: pointer;
+    position: relative;
+    top: 5px;
+    margin-left: 6px;
 }
-
-.main {
-    display: flex;
-}
-
-.vertical-menu {
-    margin-left: 20px;
-    width: 10%;
-    cursor: pointer;
-    height: calc(100vh - 80px);
-  }
-  
-  .vertical-menu button {
-    font-size: 20px;
-    background: #3E5622;
-    color: white;
-    border: none;
-    width: 150px;
-    padding: 15px 30px;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    border-radius: 5px;
-}
-  
-.vertical-menu button:hover {
-    background: #172815;
-}
-  
-.vertical-menu div:hover {
-    background-color: #95B46A;
-}
-  
-.vertical-menu div {
-    padding: 10px 5px;
-}  
 
 .file {
     border: 1px solid;
@@ -66,7 +35,37 @@
 .content {
     display: flex;
     flex-wrap: wrap;
-    margin: auto;
-    width: 90%;
     overflow: auto;
+    padding: 10px 20px;
+}
+
+.side-nav {
+    background-color: #f2f2f2;
+    height: 100%;
+    flex: 1;
+}
+
+.main {
+    display: flex;
+    height: calc(100vh - 60px);
+}
+
+.folder-path {
+    display: flex;
+    height: 50px;
+    justify-content: space-between;
+}
+
+.explorer {
+    flex: 6;
+}
+
+.nav-item {
+    align-items: center;
+    display: flex;
+    flex-direction: row;
+}
+
+.nav-item span {
+    margin-right: 12px;
 }

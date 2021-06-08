@@ -1,0 +1,14 @@
+<h1 mat-dialog-title>Share file with</h1>
+
+<mat-dialog-content>
+  <mat-form-field class="example-full-width">
+    <input matInput placeholder="Email" [(ngModel)]="email" />
+  </mat-form-field>
+</mat-dialog-content>
+
+<mat-dialog-actions>
+  <button mat-raised-button mat-dialog-close>Cancel</button>
+  <button mat-raised-button [mat-dialog-close]="email" color="primary">
+    Share
+  </button>
+</mat-dialog-actions>

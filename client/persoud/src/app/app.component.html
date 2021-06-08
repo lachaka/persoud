@@ -1,38 +1,17 @@
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"/>
-
-<!-- Toolbar -->
 <div class="toolbar" role="banner">
-  <div class="title">Title</div>
+  <div class="title">
+    <span class="material-icons-outlined">cloud</span>
+  </div>
   <form class="search">
     <input type="text" placeholder="Search for a file" name="search"/>
     <button type="submit">
-      <i class="fa fa-search"></i>
+      <span class="material-icons-outlined">search</span>
     </button>
   </form>
   <div class="nav">
-    <div>Filter</div>
     <div>Profile</div>
     <div>Logout</div>
   </div>
 </div>
 
 <app-file-explorer></app-file-explorer>
-
-<!--
-<div class="main">
-  <div class="vertical-menu">
-    <button type="button" id="btn_upload">Upload</button>
-    <div>My Cloud</div>
-    <div>Shared with me</div>
-  </div>
-
-  <div class="content" role="main">
-    <ng-container *ngFor="let file of files">
-      <div class="file">
-        <app-file-card [file]="file"></app-file-card>
-      </div>
-    </ng-container>
-  </div>
-</div>
-
--->

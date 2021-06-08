@@ -1,90 +1,172 @@
-import { NewFolderDialogComponent } from './../../dialogs/new-folder-dialog/new-folder-dialog.component';
-import { UploadFileDialogComponent } from '../../dialogs/upload-file-dialog/upload-file-dialog.component';
-import { Component, OnInit } from '@angular/core';
-import { HttpEventType, HttpResponse, JsonpClientBackend } from '@angular/common/http';
+import { ShareWithDialogComponent } from '../../modals/share-with-dialog/share-with-dialog.component';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { MatDialog } from '@angular/material/dialog';
+import { MatMenuTrigger } from '@angular/material/menu';
+import * as fileSaver from 'file-saver-es';
 
 import { FileCard } from '../../models/file';
-import { UploadFilesService } from './../../services/upload-files.service';
-
+import { NewFolderDialogComponent } from '../../modals/new-folder-dialog/new-folder-dialog.component';
+import { UploadFileDialogComponent } from '../../modals/upload-file-dialog/upload-file-dialog.component';
+import { FileManagerService } from '../../services/file-manager.service';
 
 @Component({
   selector: 'app-file-explorer',
   templateUrl: './file-explorer.component.html',
-  styleUrls: ['./file-explorer.component.css']
+  styleUrls: ['./file-explorer.component.css'],
 })
 export class FileExplorerComponent implements OnInit {
-  path: string = '/';
-  location: string = "cloud";
-  parrent: string[] = [];
-  fileList: FileCard[] = [];
-  uploadSub: Subscription | undefined;
-  
-  constructor(public dialog: MatDialog, private uploadService: UploadFilesService) {}
+  path: string;
+  location: string;
+  parrent: string[];
+  fileList: FileCard[];
+  unsubscriber: Subscription[];
+
+  @ViewChild(MatMenuTrigger) contextMenu: MatMenuTrigger;
+
+  contextMenuPosition = { x: '0px', y: '0px' };
+
+  constructor(
+    public dialog: MatDialog,
+    private fileService: FileManagerService
+  ) {
+    this.path = '/';
+    this.location = 'personal';
+    this.parrent = [];
+    this.fileList = [];
+    this.unsubscriber = [];
+  }
 
   ngOnInit(): void {
-    this.uploadSub = this.uploadService.getFiles(this.path, this.location)
-                                .subscribe(files => this.fileList = files );
+    this.unsubscriber.push(this.fileService
+      .listFiles(this.path, this.location)
+      .subscribe((files) => (this.fileList = files)));
   }
 
   ngOnDestroy() {
-    if (this.uploadSub) {
-      this.uploadSub.unsubscribe();
-    }
+    this.unsubscriber.forEach(sub => sub.unsubscribe());
   }
 
   openUploadDialog() {
-    const data = { 
+    const data = {
       data: {
-        uploadService: this.uploadService,
-        path: this.path
-      }
+        uploadService: this.fileService,
+        path: this.path,
+      },
     };
 
-    let dialogRef = this.dialog.open(UploadFileDialogComponent, data);
+    const dialogRef = this.dialog.open(UploadFileDialogComponent, data);
 
-    dialogRef.afterClosed().subscribe(res => {
-      if (res) {  
-        console.log("add new files to the list");
+    this.unsubscriber.push(dialogRef.afterClosed().subscribe((res) => {
+      if (res) {
+        res.forEach(file => {
+          this.fileList.push({
+            name: file.name,
+            path: this.path,
+            size: file.size,
+            isDir: false
+          });
+        });
       }
-    });
+    }));
   }
 
   createFolderDialog() {
-    let dialogRef = this.dialog.open(NewFolderDialogComponent);
+    const dialogRef = this.dialog.open(NewFolderDialogComponent);
 
-    dialogRef.afterClosed().subscribe((folder: string) => {
+    this.unsubscriber.push(dialogRef.afterClosed().subscribe((folder: string) => {
       console.log(folder);
       if (folder.length > 0) {
-        this.uploadService.createFolder(folder, this.path).subscribe(res => {
-          console.log(res);
-        }, error => {
-          console.log(error);
-        }, () => {
-          this.fileList.push({ name: folder, path: this.path, size: 0, isDir: true});
-        });
+        this.unsubscriber.push(this.fileService.createFolder(folder, this.path).subscribe(
+          (res) => {
+            console.log(res);
+          },
+          (error) => {
+            console.log(error);
+          },
+          () => {
+            this.fileList.push({
+              name: folder,
+              path: this.path,
+              size: 0,
+              isDir: true,
+            });
+          }
+        ));
       }
-    });
+    }));
   }
 
   forward(dir: string): void {
     this.parrent.push(dir);
     this.path += dir + '/';
-    this.uploadSub = this.uploadService.getFiles(this.path, this.location)
-                                .subscribe(files => this.fileList = files );
+
+    this.unsubscriber.push(this.fileService
+      .listFiles(this.path, this.location)
+      .subscribe((files) => (this.fileList = files)));  
+
   }
 
   backward(): void {
     if (this.path.length > 1) {
       this.path = this.path.slice(0, -this.parrent.pop().length - 1);
 
-      this.uploadSub = this.uploadService.getFiles(this.path, this.location)
-                                  .subscribe(files => this.fileList = files );
+      this.unsubscriber.push(this.fileService
+        .listFiles(this.path, this.location)
+        .subscribe((files) => (this.fileList = files)));
     }
   }
 
-  trackByName(index, file) {
+  trackByName(index, file: FileCard) {
     return index;
+  }
+
+  onRightClick(event: MouseEvent, file: FileCard) {
+    event.preventDefault();
+
+    this.contextMenuPosition.x = event.clientX + 'px';
+    this.contextMenuPosition.y = event.clientY + 'px';
+    this.contextMenu.menuData = { file: file };
+    this.contextMenu.openMenu();
+  }
+
+  onContextMenuShare(file: FileCard) {
+    const dialogRef = this.dialog.open(ShareWithDialogComponent);
+
+    this.unsubscriber.push(dialogRef.afterClosed().subscribe((email: string) => {
+      if (email.length > 0) {
+        this.unsubscriber.push(this.fileService.shareFile(file, email).subscribe(
+          (error) => {
+            console.log(error);
+          }
+        ));
+      }
+    })); 
+  }
+
+  onContextMenuDownload(file: FileCard) {
+    this.fileService.downloadFile(file).subscribe(res => {
+      const contentDisposition = res.headers.get('content-disposition');
+      const filename = contentDisposition.split(';')[1].split('=')[1].trim();
+      const blob: any = new Blob([res.body]);
+      
+      fileSaver.saveAs(blob, filename);
+    }, err => {
+      console.log(err);
+    });
+  }
+
+  onContextMenuRemove(file: FileCard) {
+    this.unsubscriber.push(this.fileService.deleteFile(file).subscribe(() => {
+      this.fileList = this.fileList.filter((f) => f.name !== file.name);
+    }));
+  }
+
+  myFiles(): void {
+    
+  }
+
+  sharedFiles(): void {
+
   }
 }
