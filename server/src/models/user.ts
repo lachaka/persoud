@@ -1,15 +1,19 @@
 import { Schema, model } from "mongoose";
+import File from "./file";
 
 const userSchema = new Schema({
   email: {
     type: String,
     requeired: true,
+    unique: true,
+    match: /^([\w-\.]+@([\w-]+\.)+[\w-]{2,4})?$/,
   },
   password: {
     type: String,
     required: true,
+    //match:???
   },
-  // files: []
+  files: [File],
 });
 
 const User = model("User", userSchema);

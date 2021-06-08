@@ -1,4 +1,5 @@
 import { Schema, model } from "mongoose";
+import User from "./user";
 
 const fileSchema = new Schema(
   {
@@ -25,7 +26,7 @@ const fileSchema = new Schema(
       type: Date,
       required: true,
     },
-    // sharedWith: [],
+    sharedWith: [User],
   },
   {
     timestamps: {
