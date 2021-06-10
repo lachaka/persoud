@@ -1,4 +1,5 @@
-import { Schema, model } from "mongoose";
+import { Schema, model } from 'mongoose';
+import File from './file';
 
 const userSchema = new Schema({
   email: {
@@ -9,10 +10,10 @@ const userSchema = new Schema({
     type: String,
     required: true,
   },
-  // files: []
+  files: [{ type: Schema.Types.ObjectId, ref: File }],
 });
 
-const User = model("User", userSchema);
+const User = model('User', userSchema);
 
 export { userSchema };
 

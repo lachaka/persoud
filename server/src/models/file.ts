@@ -1,4 +1,5 @@
-import { Schema, model } from "mongoose";
+import { Schema, model } from 'mongoose';
+import User from './user';
 
 const fileSchema = new Schema(
   {
@@ -21,20 +22,17 @@ const fileSchema = new Schema(
     isDir: {
       type: Boolean,
     },
-    upload_time: {
-      type: Date,
-      required: true,
-    },
-    // sharedWith: [],
+    sharedWith: [{ type: Schema.Types.ObjectId, ref: User }],
   },
   {
     timestamps: {
-      createdAt: "created_at",
+      createdAt: true,
+      updatedAt: false,
     },
   }
 );
 
-const File = model("File", fileSchema);
+const File = model('File', fileSchema);
 
 export { fileSchema };
 
