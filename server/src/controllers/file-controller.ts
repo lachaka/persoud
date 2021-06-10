@@ -1,7 +1,6 @@
-import { Request, Response } from "express";
-import * as fs from "fs";
-//import * as achiver from 'archiver';
-const archiver = require("archiver");
+import { Request, Response } from 'express';
+import * as fs from 'fs';
+import * as archiver from 'archiver';
 
 const UPLOAD_DIR = process.env.UPLOAD_DIR;
 const TEMP_DIR = process.env.TEMP_DIR;
@@ -10,7 +9,7 @@ export default class FileController {
   construct() {}
 
   download = async (req: Request, res: Response) => {
-    res.setHeader("Access-Control-Expose-Headers", "Content-Disposition");
+    res.setHeader('Access-Control-Expose-Headers', 'Content-Disposition');
 
     const file = req.body;
 
@@ -19,9 +18,9 @@ export default class FileController {
     if (file.isDir) {
       const outputPath = TEMP_DIR + `/${file.name}.zip`;
       const output = fs.createWriteStream(outputPath);
-      const archive = archiver("zip");
+      const archive = archiver('zip');
 
-      output.on("finish", () => {
+      output.on('finish', () => {
         return res.download(outputPath, (err) => {
           if (err) {
             console.log(err);
@@ -30,7 +29,7 @@ export default class FileController {
         });
       });
 
-      output.on("error", (err) => {
+      output.on('error', (err) => {
         console.log(err);
         return res.status(500).send(err);
       });
@@ -44,7 +43,7 @@ export default class FileController {
   };
 
   uploadFile = async (req: Request, res: Response) => {
-    res.status(200).send({ message: "File uploaded successfully!" });
+    res.status(200).send({ message: 'File uploaded successfully!' });
   };
 
   getFiles = async (req: Request, res: Response) => {
@@ -55,7 +54,7 @@ export default class FileController {
       if (err) {
         res.status(500).send(err);
       }
-
+      
       const filesInfo = files.map((file) => ({
         name: file,
         path: path,
@@ -74,7 +73,7 @@ export default class FileController {
     fs.promises
       .mkdir(UPLOAD_DIR + path + folder)
       .then(() =>
-        res.status(200).send({ message: "Folder created successfully!" })
+        res.status(200).send({ message: 'Folder created successfully!' })
       )
       .catch((err) => res.status(500).send({ err }));
   };
@@ -88,12 +87,12 @@ export default class FileController {
           recursive: true,
           force: true,
         })
-        .then(() => res.status(200).send({ message: "File is deleted" }))
+        .then(() => res.status(200).send({ message: 'File is deleted' }))
         .catch((err) => res.status(500).send(err));
     } else {
       fs.promises
         .unlink(UPLOAD_DIR + file.path + file.name)
-        .then(() => res.status(200).send({ message: "File is deleted" }))
+        .then(() => res.status(200).send({ message: 'File is deleted' }))
         .catch((err) => res.status(500).send({ err }));
     }
   };

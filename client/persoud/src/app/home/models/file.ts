@@ -3,5 +3,6 @@ export class FileCard {
     path: string;
     size: number;
     isDir: boolean;
+    upload_time: number;
 }
 
