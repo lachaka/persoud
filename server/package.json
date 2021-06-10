@@ -12,7 +12,10 @@
   "devDependencies": {
     "@types/express": "^4.17.11",
     "@types/node": "^15.0.2",
-    "express": "^4.17.1",
+    "@typescript-eslint/eslint-plugin": "^4.26.1",
+    "@typescript-eslint/parser": "^4.26.1",
+    "eslint-config-airbnb-base": "^14.2.1",
+    "eslint-plugin-import": "^2.23.4",
     "ts-node": "^9.1.1",
     "ts-node-dev": "^1.1.6",
     "typescript": "^4.2.4"
@@ -20,8 +23,10 @@
   "dependencies": {
     "@types/multer": "^1.4.5",
     "archiver": "^5.3.0",
+    "bcrypt": "^5.0.1",
     "cors": "^2.8.5",
     "dotenv": "^10.0.0",
+    "express": "^4.17.1",
     "mongodb": "^3.6.9",
     "mongoose": "^5.12.13",
     "multer": "^1.4.2",
