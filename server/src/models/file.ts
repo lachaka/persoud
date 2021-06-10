@@ -1,5 +1,5 @@
-import { Schema, model } from "mongoose";
-import User from "./user";
+import { Schema, model } from 'mongoose';
+import User from './user';
 
 const fileSchema = new Schema(
   {
@@ -31,7 +31,8 @@ const fileSchema = new Schema(
     },
   }
 );
-const File = model("File", fileSchema);
+
+const File = model('File', fileSchema);
 
 export { fileSchema };
 
