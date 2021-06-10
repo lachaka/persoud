@@ -1,0 +1,30 @@
+<div class="auth">
+    <form id="loginContainer" class="container" name="container">
+      <h1>Login</h1>
+
+      <label for="email"> Email </label>
+      <input
+        id="email"
+        type="email"
+        name="email"
+        placeholder="Email"
+        class="auth-input"
+        required
+      />
+
+      <label for="password"> Password </label>
+      <input
+        id="password"
+        type="password"
+        name="password"
+        placeholder="Password"
+        class="auth-input"
+        required
+      />
+
+      <div class="auth-actions">
+        <button type="submit" class="auth-button" onclick="">Login</button>
+        <button class="auth-button" (click)="signUp()">Sign Up</button>
+      </div>
+    </form>
+  </div>

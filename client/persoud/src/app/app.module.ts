@@ -19,8 +19,14 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { UploadFileDialogComponent } from './modals/upload-file-dialog/upload-file-dialog.component';
 import { NewFolderDialogComponent } from './modals/new-folder-dialog/new-folder-dialog.component';
 import { ShareWithDialogComponent } from './modals/share-with-dialog/share-with-dialog.component';
+import { AuthModule } from './auth/auth/auth.module';
+import { RegisterComponent } from './auth/components/register/register.component';
+import { LoginComponent } from './auth/components/login/login.component';
 
-const routes: Routes = [];
+const routes: Routes = [
+  { path: 'login', component: LoginComponent },
+  { path: 'register', component: RegisterComponent },
+];
 
 @NgModule({
   declarations: [
@@ -29,7 +35,7 @@ const routes: Routes = [];
     FileExplorerComponent,
     UploadFileDialogComponent,
     NewFolderDialogComponent,
-    ShareWithDialogComponent
+    ShareWithDialogComponent,
   ],
   entryComponents: [ 
     UploadFileDialogComponent
@@ -48,7 +54,8 @@ const routes: Routes = [];
     MatMenuModule,
     MatListModule,
     NgxMatFileInputModule,
-    ToastrModule.forRoot()
+    ToastrModule.forRoot(),
+    AuthModule
   ],
   providers: [],
   bootstrap: [AppComponent]
