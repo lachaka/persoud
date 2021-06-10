@@ -1,0 +1,46 @@
+<div class="auth">
+    <form id="loginContainer" class="container" name="container" (ngSubmit)="onSubmit()">
+      <h1>Register</h1>
+
+      <label for="email"> Email </label>
+      <input
+        id="email"
+        type="email"
+        name="email"
+        placeholder="Email"
+        class="auth-input"
+        [(ngModel)]="user.email"
+        #email="ngModel"
+        required
+      />
+
+      <label for="password"> Password </label>
+      <input
+        id="password"
+        type="password"
+        name="password"
+        placeholder="Password"
+        class="auth-input"
+        [(ngModel)]="user.password"
+        #password="ngModel"
+        required
+      />
+
+
+      <label for="password">Confirm Password </label>
+      <input
+        id="password"
+        type="password"
+        name="password"
+        placeholder="confirm password"
+        class="auth-input"
+        [(ngModel)]="user.passwordConf"
+        #passwordConf="ngModel"
+        required
+      />
+
+      <div class="auth-actions">
+        <button type="submit" class="auth-button" onclick="">Register</button>
+      </div>
+    </form>
+  </div>
