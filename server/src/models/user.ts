@@ -5,6 +5,7 @@ const userSchema = new Schema({
   email: {
     type: String,
     requeired: true,
+    match: /^([\w-\.]+@([\w-]+\.)+[\w-]{2,4})?$/,
   },
   password: {
     type: String,
