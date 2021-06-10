@@ -1,3 +1,5 @@
+<app-nav></app-nav>
+
 <div class="main">
   <div class="side-nav">
     <mat-selection-list #shoes [multiple]="false">
@@ -20,6 +22,15 @@
         Current directory: {{ path }} 
       </div>
       <div>
+        <mat-form-field appearance="none">
+          <mat-label>Sort by</mat-label>
+          <mat-select (selectionChange)="sortBy($event.value)">
+            <mat-option value="name">Name</mat-option>
+            <mat-option value="size">Size</mat-option>
+            <mat-option value="upload_time">Upload time</mat-option>
+          </mat-select>
+        </mat-form-field>
+
         <button mat-button (click)="openUploadDialog()">
           <span class="material-icons-outlined">file_upload</span>
           Upload

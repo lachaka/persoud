@@ -38,13 +38,15 @@ export class FileExplorerComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.unsubscriber.push(this.fileService
-      .listFiles(this.path, this.location)
-      .subscribe((files) => (this.fileList = files)));
+    this.unsubscriber.push(
+      this.fileService
+        .listFiles(this.path, this.location)
+        .subscribe((files) => (this.fileList = files))
+    );
   }
 
   ngOnDestroy() {
-    this.unsubscriber.forEach(sub => sub.unsubscribe());
+    this.unsubscriber.forEach((sub) => sub.unsubscribe());
   }
 
   openUploadDialog() {
@@ -57,63 +59,74 @@ export class FileExplorerComponent implements OnInit {
 
     const dialogRef = this.dialog.open(UploadFileDialogComponent, data);
 
-    this.unsubscriber.push(dialogRef.afterClosed().subscribe((res) => {
-      if (res) {
-        res.forEach(file => {
-          this.fileList.push({
-            name: file.name,
-            path: this.path,
-            size: file.size,
-            isDir: false
+    this.unsubscriber.push(
+      dialogRef.afterClosed().subscribe((res) => {
+        if (res) {
+          res.forEach((file) => {
+            this.fileList.push({
+              name: file.name,
+              path: this.path,
+              size: file.size,
+              isDir: false,
+              upload_time: Date.now(),
+            });
           });
-        });
-      }
-    }));
+        }
+      })
+    );
   }
 
   createFolderDialog() {
     const dialogRef = this.dialog.open(NewFolderDialogComponent);
 
-    this.unsubscriber.push(dialogRef.afterClosed().subscribe((folder: string) => {
-      console.log(folder);
-      if (folder.length > 0) {
-        this.unsubscriber.push(this.fileService.createFolder(folder, this.path).subscribe(
-          (res) => {
-            console.log(res);
-          },
-          (error) => {
-            console.log(error);
-          },
-          () => {
-            this.fileList.push({
-              name: folder,
-              path: this.path,
-              size: 0,
-              isDir: true,
-            });
-          }
-        ));
-      }
-    }));
+    this.unsubscriber.push(
+      dialogRef.afterClosed().subscribe((folder: string) => {
+        console.log(folder);
+        if (folder.length > 0) {
+          this.unsubscriber.push(
+            this.fileService.createFolder(folder, this.path).subscribe(
+              (res) => {
+                console.log(res);
+              },
+              (error) => {
+                console.log(error);
+              },
+              () => {
+                this.fileList.push({
+                  name: folder,
+                  path: this.path,
+                  size: 0,
+                  isDir: true,
+                  upload_time: Date.now(),
+                });
+              }
+            )
+          );
+        }
+      })
+    );
   }
 
   forward(dir: string): void {
     this.parrent.push(dir);
     this.path += dir + '/';
 
-    this.unsubscriber.push(this.fileService
-      .listFiles(this.path, this.location)
-      .subscribe((files) => (this.fileList = files)));  
-
+    this.unsubscriber.push(
+      this.fileService
+        .listFiles(this.path, this.location)
+        .subscribe((files) => (this.fileList = files))
+    );
   }
 
   backward(): void {
     if (this.path.length > 1) {
       this.path = this.path.slice(0, -this.parrent.pop().length - 1);
 
-      this.unsubscriber.push(this.fileService
-        .listFiles(this.path, this.location)
-        .subscribe((files) => (this.fileList = files)));
+      this.unsubscriber.push(
+        this.fileService
+          .listFiles(this.path, this.location)
+          .subscribe((files) => (this.fileList = files))
+      );
     }
   }
 
@@ -133,40 +146,58 @@ export class FileExplorerComponent implements OnInit {
   onContextMenuShare(file: FileCard) {
     const dialogRef = this.dialog.open(ShareWithDialogComponent);
 
-    this.unsubscriber.push(dialogRef.afterClosed().subscribe((email: string) => {
-      if (email.length > 0) {
-        this.unsubscriber.push(this.fileService.shareFile(file, email).subscribe(
-          (error) => {
-            console.log(error);
-          }
-        ));
-      }
-    })); 
+    this.unsubscriber.push(
+      dialogRef.afterClosed().subscribe((email: string) => {
+        if (email.length > 0) {
+          this.unsubscriber.push(
+            this.fileService.shareFile(file, email).subscribe((error) => {
+              console.log(error);
+            })
+          );
+        }
+      })
+    );
   }
 
   onContextMenuDownload(file: FileCard) {
-    this.fileService.downloadFile(file).subscribe(res => {
-      const contentDisposition = res.headers.get('content-disposition');
-      const filename = contentDisposition.split(';')[1].split('=')[1].trim();
-      const blob: any = new Blob([res.body]);
-      
-      fileSaver.saveAs(blob, filename);
-    }, err => {
-      console.log(err);
-    });
+    this.fileService.downloadFile(file).subscribe(
+      (res) => {
+        const contentDisposition = res.headers.get('content-disposition');
+        const filename = contentDisposition.split(';')[1].split('=')[1].trim();
+        const blob: any = new Blob([res.body]);
+
+        fileSaver.saveAs(blob, filename);
+      },
+      (err) => {
+        console.log(err);
+      }
+    );
   }
 
   onContextMenuRemove(file: FileCard) {
-    this.unsubscriber.push(this.fileService.deleteFile(file).subscribe(() => {
-      this.fileList = this.fileList.filter((f) => f.name !== file.name);
-    }));
+    this.unsubscriber.push(
+      this.fileService.deleteFile(file).subscribe(() => {
+        this.fileList = this.fileList.filter((f) => f.name !== file.name);
+      })
+    );
   }
 
-  myFiles(): void {
-    
+  sortBy(value: string) {
+    if (value == 'name') {
+      this.fileList.sort((f1, f2) => f1.name.localeCompare(f2.name));
+    }
+    if (value == 'size') {
+      this.fileList = this.fileList.sort((f1, f2) => f1.size - f2.size);
+    }
+
+    if (value == 'upload_time') {
+      this.fileList = this.fileList.sort(
+        (f1, f2) => f1.upload_time - f2.upload_time
+      );
+    }
   }
 
-  sharedFiles(): void {
+  myFiles(): void {}
 
-  }
+  sharedFiles(): void {}
 }

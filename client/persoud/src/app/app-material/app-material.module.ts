@@ -7,6 +7,8 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatInputModule } from '@angular/material/input';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatListModule } from '@angular/material/list';
+import { MatCardModule} from '@angular/material/card';  
+import { MatSelectModule } from '@angular/material/select';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { ToastrModule } from 'ngx-toastr';
@@ -23,6 +25,8 @@ import { ToastrModule } from 'ngx-toastr';
     MatInputModule,
     MatMenuModule,
     MatListModule,
+    MatCardModule,
+    MatSelectModule,
     FormsModule,
     ReactiveFormsModule,
     BrowserAnimationsModule,
@@ -37,6 +41,8 @@ import { ToastrModule } from 'ngx-toastr';
     MatInputModule,
     MatMenuModule,
     MatListModule,
+    MatCardModule,
+    MatSelectModule,
     FormsModule,
     ReactiveFormsModule,
     BrowserAnimationsModule,

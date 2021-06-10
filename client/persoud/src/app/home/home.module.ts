@@ -8,6 +8,7 @@ import { FileExplorerComponent } from './components/file-explorer/file-explorer.
 import { UploadFileDialogComponent } from './modals/upload-file-dialog/upload-file-dialog.component';
 import { NewFolderDialogComponent } from './modals/new-folder-dialog/new-folder-dialog.component';
 import { ShareWithDialogComponent } from './modals/share-with-dialog/share-with-dialog.component';
+import { NavComponent } from './components/nav/nav.component';
 
 
 @NgModule({
@@ -17,6 +18,7 @@ import { ShareWithDialogComponent } from './modals/share-with-dialog/share-with-
     UploadFileDialogComponent,
     NewFolderDialogComponent,
     ShareWithDialogComponent,
+    NavComponent,
   ],
   entryComponents: [
     UploadFileDialogComponent,

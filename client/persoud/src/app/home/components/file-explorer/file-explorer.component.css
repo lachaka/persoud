@@ -69,3 +69,11 @@
 .nav-item span {
     margin-right: 12px;
 }
+
+mat-form-field  {
+    font-size: 15px;   
+    cursor: pointer;
+    position: relative;
+    height: 5px;
+    width: 20%;
+}
