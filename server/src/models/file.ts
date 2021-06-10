@@ -22,19 +22,15 @@ const fileSchema = new Schema(
     isDir: {
       type: Boolean,
     },
-    upload_time: {
-      type: Date,
-      required: true,
-    },
-    sharedWith: [User],
+    sharedWith: [{ type: Schema.Types.ObjectId, ref: User }],
   },
   {
     timestamps: {
-      createdAt: "created_at",
+      createdAt: true,
+      updatedAt: false,
     },
   }
 );
-
 const File = model("File", fileSchema);
 
 export { fileSchema };

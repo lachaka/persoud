@@ -5,15 +5,13 @@ const userSchema = new Schema({
   email: {
     type: String,
     requeired: true,
-    unique: true,
     match: /^([\w-\.]+@([\w-]+\.)+[\w-]{2,4})?$/,
   },
   password: {
     type: String,
     required: true,
-    //match:???
   },
-  files: [File],
+  files: [{ type: Schema.Types.ObjectId, ref: File }],
 });
 
 const User = model("User", userSchema);

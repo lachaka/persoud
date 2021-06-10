@@ -1,5 +1,5 @@
 <div class="auth">
-    <form id="loginContainer" class="container" name="container">
+    <form id="loginContainer" class="container" name="container" (ngSubmit)="onSubmit()">
       <h1>Login</h1>
 
       <label for="email"> Email </label>
@@ -8,6 +8,8 @@
         type="email"
         name="email"
         placeholder="Email"
+        [(ngModel)]="user.email"
+        #email="ngModel"
         class="auth-input"
         required
       />
@@ -19,12 +21,14 @@
         name="password"
         placeholder="Password"
         class="auth-input"
+        [(ngModel)]="user.password"
+        #password="ngModel"
         required
       />
 
       <div class="auth-actions">
-        <button type="submit" class="auth-button" onclick="">Login</button>
-        <button class="auth-button" (click)="signUp()">Sign Up</button>
+        <button type="submit" class="auth-button">Login</button>
+        <a routerLink="/register">Sign Up</a>
       </div>
     </form>
   </div>

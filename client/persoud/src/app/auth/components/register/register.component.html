@@ -1,5 +1,5 @@
 <div class="auth">
-    <form id="loginContainer" class="container" name="container">
+    <form id="loginContainer" class="container" name="container" (ngSubmit)="onSubmit()">
       <h1>Register</h1>
 
       <label for="email"> Email </label>
@@ -9,6 +9,8 @@
         name="email"
         placeholder="Email"
         class="auth-input"
+        [(ngModel)]="user.email"
+        #email="ngModel"
         required
       />
 
@@ -19,6 +21,8 @@
         name="password"
         placeholder="Password"
         class="auth-input"
+        [(ngModel)]="user.password"
+        #password="ngModel"
         required
       />
 
@@ -28,8 +32,10 @@
         id="password"
         type="password"
         name="password"
-        placeholder="Password"
+        placeholder="confirm password"
         class="auth-input"
+        [(ngModel)]="user.passwordConf"
+        #passwordConf="ngModel"
         required
       />
 
