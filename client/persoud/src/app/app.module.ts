@@ -13,12 +13,12 @@ import { NgxMatFileInputModule } from '@angular-material-components/file-input';
 import { ToastrModule } from 'ngx-toastr';
 
 import { AppComponent } from './app.component';
-import { FileCardComponent } from './components/file-card/file-card.component';
-import { FileExplorerComponent } from './components/file-explorer/file-explorer.component';
+import { FileCardComponent } from './home/components/file-card/file-card.component';
+import { FileExplorerComponent } from './home/components/file-explorer/file-explorer.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { UploadFileDialogComponent } from './modals/upload-file-dialog/upload-file-dialog.component';
-import { NewFolderDialogComponent } from './modals/new-folder-dialog/new-folder-dialog.component';
-import { ShareWithDialogComponent } from './modals/share-with-dialog/share-with-dialog.component';
+import { UploadFileDialogComponent } from './home/modals/upload-file-dialog/upload-file-dialog.component';
+import { NewFolderDialogComponent } from './home/modals/new-folder-dialog/new-folder-dialog.component';
+import { ShareWithDialogComponent } from './home/modals/share-with-dialog/share-with-dialog.component';
 import { AuthModule } from './auth/auth/auth.module';
 import { RegisterComponent } from './auth/components/register/register.component';
 import { LoginComponent } from './auth/components/login/login.component';
