@@ -1,6 +1,6 @@
 import * as express from 'express';
-import file from './file';
-import user from './loginLogout-routes';
+import file from '/file';
+import user from './user';
 
 const routes = express.Router();
 
