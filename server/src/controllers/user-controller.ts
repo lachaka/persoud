@@ -1,4 +1,4 @@
-import { Request, Response, response } from 'express';
+import { Request, Response } from 'express';
 import * as bcrypt from 'bcrypt';
 import * as mongoose from 'mongoose';
 import User from '../models/user';
@@ -7,18 +7,24 @@ import IUser from '../models/interfaces/IUser';
 export default class LoginLogoutController {
   construct() {}
 
+  public async findUser(email: string) {
+    return User.findOne({ email: email }).exec();
+  }
+
+  public async createUser(user) {}
+
   register = async (req: Request, res: Response) => {
     const email = req.body.email;
     const password = req.body.password;
     console.log(req.body);
-    this.notExists(emailVar)
+    this.notExists(email)
       .then(() => {
         const newUser = new User({
-          email: emailVar,
+          email,
           password: bcrypt.password,
         });
 
-        //add user
+        // add user
         res.status(200).send('User created.');
       })
       .catch(() => {

@@ -1,5 +1,5 @@
 import * as express from 'express';
-import LoginLogoutClass from '../controllers/loginLogout-controller';
+import LoginLogoutClass from '../controllers/user-controller';
 
 const user = express.Router();
 const controller = new LoginLogoutClass();
