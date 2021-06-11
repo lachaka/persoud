@@ -1,89 +1,59 @@
 import { Request, Response } from 'express';
 import * as bcrypt from 'bcrypt';
-import * as mongoose from 'mongoose';
 import User from '../models/user';
 import IUser from '../models/interfaces/IUser';
 
-export default class LoginLogoutController {
+export default class UserController {
   construct() {}
 
   public async findUser(email: string) {
     return User.findOne({ email: email }).exec();
   }
 
-  public async createUser(user) {}
-
-  register = async (req: Request, res: Response) => {
-    const email = req.body.email;
-    const password = req.body.password;
-    console.log(req.body);
-    this.notExists(email)
-      .then(() => {
-        const newUser = new User({
-          email,
-          password: bcrypt.password,
-        });
-
-        // add user
-        res.status(200).send('User created.');
-      })
-      .catch(() => {
-        res.status(400).send('User already exists.');
-      });
-  };
-
-  notExists = (emailVar: string) => {
-    return new Promise(async (res, rej) => {
-      const user = await User.findOne({ email: emailVar }).exec();
-      if (!user) {
-        res(true);
+  public async createUser(user: IUser) {
+    bcrypt.hash(user.password, 10, async (error: Error, hash: string) => {
+      if (error) {
+        return error;
       }
-      rej('User does not exists');
-    });
-  };
 
-  exists = (emailVar: string) => {
-    return new Promise(async (res, rej) => {
-      const user = await User.findOne({ email: emailVar }).exec();
-      if (user) {
-        res(true);
-      }
-      rej('User does not exists');
-    });
-  };
-
-  addNewUser = async (userVar: IUser) => {
-    return new Promise(async (res, rej) => {
       const newUser = new User({
-        _id: new mongoose.Types.ObjectId(),
-        email: userVar.email,
-        password: userVar.password,
+        email: user.email,
+        password: hash,
       });
 
-      await newUser
-        .save()
-        .then(() => {
-          res(true);
-        })
-        .catch(() => {
-          rej('Database error: user not added');
-        });
+      await newUser.save();
     });
-  };
+  }
 
-  login = async (req: Request, res: Response) => {
-    const emailVar = req.body.email;
-    const passwordVar = req.body.password;
+  public validateUser(user: IUser): string[] {
+    const errors: string[] = [];
 
-    this.exists(emailVar).then(async () => {
-      const user = await User.findOne({ email: emailVar }).exec();
+    if (!user.email) {
+      errors.push('Email is empty');
+    }
 
-      if (user && (await bcrypt.compare(passwordVar, user.password))) {
-        res.status(200).send('Login success!');
-      }
-      res.status(400).send('Invalid login');
-    });
-  };
+    if (
+      !user.password.match(/^[a-zA-Z0-9*.!@#$%^&(){}[\]:;<>,.?\/~_+-=|].{8,}$/)
+    ) {
+      errors.push('Use only letters and digits in password');
+    }
+
+    return errors;
+  }
+
+  // login = async (req: Request, res: Response) => {
+  //   const emailVar = req.body.email;
+  //   const passwordVar = req.body.password;
+
+  //   this.exists(emailVar).then(async () => {
+  //     const user = await User.findOne({ email: emailVar }).exec();
+
+  //     if (user && (await bcrypt.compare(passwordVar, user.password))) {
+  //       res.status(200).send('Login success!');
+  //     }
+  //     res.status(400).send('Invalid login');
+  //   });
+  // };
 
   logout = async (req: Request, res: Response) => {
     res.clearCookie(process.env.SESSION_NAME);
