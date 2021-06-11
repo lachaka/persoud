@@ -1,7 +1,11 @@
 import { Request, Response } from 'express';
+import { Types } from 'mongoose';
+import * as fs from 'fs';
 import * as bcrypt from 'bcrypt';
 import User from '../models/user';
 import IUser from '../models/interfaces/IUser';
+
+const UPLOAD_DIR = process.env.UPLOAD_DIR;
 
 export default class UserController {
   construct() {}
@@ -17,12 +21,18 @@ export default class UserController {
       }
 
       const newUser = new User({
+        _id: new Types.ObjectId(),
         email: user.email,
         password: hash,
       });
 
       await newUser.save();
+      this.createUserFolder(newUser._id);
     });
+  }
+
+  private createUserFolder(id: Types.ObjectId) {
+    fs.promises.mkdir(UPLOAD_DIR + '/' + id).catch((err) => console.log(err));
   }
 
   public validateUser(user: IUser): string[] {
