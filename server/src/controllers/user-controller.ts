@@ -6,13 +6,13 @@ import User from '../models/user';
 import IUser from '../models/interfaces/IUser';
 import generateToken from './generate-token';
 
-const UPLOAD_DIR = process.env.UPLOAD_DIR;
+const UPLOAD_DIR: string = process.env.UPLOAD_DIR;
 
 export default class UserController {
   construct() {}
 
   findUser = async (email: string) => {
-    return User.findOne({ email: email }).exec();
+    return await User.findOne({ email: email }).exec();
   };
 
   createUser = async (user: IUser) => {
@@ -42,7 +42,9 @@ export default class UserController {
       errors.push('Email is empty');
     }
 
-    if (!user.password.match(/^[a-zA-Z0-9*.!@#$%^&(){}[\]:;<>,.?\/~_+-=|].{8,}$/)) {
+    if (
+      !user.password.match(/^[a-zA-Z0-9*.!@#$%^&(){}[\]:;<>,.?\/~_+-=|].{8,}$/)
+    ) {
       errors.push('Password must be at least 8 symbols');
     }
 
@@ -52,34 +54,32 @@ export default class UserController {
   login = async (req: Request, res: Response, next: () => void) => {
     const { email, password } = req.body;
 
-    this.findUser(email)
-      .then((user) => {
-        console.log(user);
-        if (user) {
-          bcrypt.compare(password, user.password, (error: Error, result: boolean) => {
-              if (error) {
-                res.status(400).json({ error: error });
-              }
+    try {
+      const user = await this.findUser(email);
 
-              if (result) {
-                generateToken(res, email);
-                res.status(200).json({ message: 'Login successful' });
-              } else {
-                res.status(401).json({ error: 'Invalid password' });
-              }
+      if (user) {
+        bcrypt.compare(
+          password,
+          user.password,
+          (error: Error, result: boolean) => {
+            if (error) {
+              res.status(400).json({ error: error });
             }
-          );
-        } else {
-          res.status(401).json({ error: 'Invalid email' });
-        }
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-  };
 
-  logout = async (req: Request, res: Response) => {
-    res.clearCookie(process.env.SESSION_NAME);
-    res.status(200);
+            if (result) {
+              generateToken(res, email);
+              res.status(200).json({ message: 'Login successful' });
+            } else {
+              res.status(401).json({ error: 'Invalid password' });
+            }
+          }
+        );
+      } else {
+        res.status(401).json({ error: 'Invalid email' });
+      }
+    } catch (error) {
+      console.log(error);
+      res.status(401).json({ error: 'Invalid email' });
+    }
   };
 }
