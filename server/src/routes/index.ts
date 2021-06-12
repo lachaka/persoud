@@ -8,7 +8,7 @@ routes.use('/files', file);
 routes.use('', user);
 
 routes.all('*', (req: Request, res: Response) => {
-    res.status(404).json({ 'error': 'No resource' })
+    res.status(404).json({ success: false, error: 'No resource' })
 });
 
 export default routes;

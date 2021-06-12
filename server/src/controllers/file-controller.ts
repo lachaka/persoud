@@ -31,7 +31,7 @@ export default class FileController {
 
       output.on('error', (err) => {
         console.log(err);
-        return res.status(500).send(err);
+        return res.status(500).json({ success: false, error: err });
       });
 
       archive.pipe(output);
@@ -43,7 +43,7 @@ export default class FileController {
   };
 
   uploadFile = async (req: Request, res: Response) => {
-    res.status(200).send({ message: 'File uploaded successfully!' });
+    res.status(200).json({ success: true, message: 'File uploaded successfully!' });
   };
 
   getFiles = async (req: Request, res: Response) => {
@@ -52,7 +52,7 @@ export default class FileController {
 
     fs.readdir(location, (err, files) => {
       if (err) {
-        res.status(500).send(err);
+        res.status(500).json({ success: false, error: err });
       }
       
       const filesInfo = files.map((file) => ({
@@ -62,7 +62,7 @@ export default class FileController {
         isDir: fs.statSync(location + file).isDirectory(),
       }));
 
-      res.status(200).send(filesInfo);
+      res.status(200).json({ files: filesInfo });
     });
   };
 
@@ -73,9 +73,9 @@ export default class FileController {
     fs.promises
       .mkdir(UPLOAD_DIR + path + folder)
       .then(() =>
-        res.status(200).send({ message: 'Folder created successfully!' })
+        res.status(200).json({ success: true, message: 'Folder created successfully' })
       )
-      .catch((err) => res.status(500).send({ err }));
+      .catch((err) => res.status(500).json({ success: false, error: err }));
   };
 
   deleteFile = async (req: Request, res: Response) => {
@@ -87,13 +87,13 @@ export default class FileController {
           recursive: true,
           force: true,
         })
-        .then(() => res.status(200).send({ message: 'File is deleted' }))
-        .catch((err) => res.status(500).send(err));
+        .then(() => res.status(200).json({ success: true, message: 'File is deleted' }))
+        .catch((err) => res.status(500).json({ success: false, error: err }));
     } else {
       fs.promises
         .unlink(UPLOAD_DIR + file.path + file.name)
-        .then(() => res.status(200).send({ message: 'File is deleted' }))
-        .catch((err) => res.status(500).send({ err }));
+        .then(() => res.status(200).json({ success: true, message: 'File is deleted' }))
+        .catch((err) => res.status(500).json({ success: false, error: err }));
     }
   };
 }

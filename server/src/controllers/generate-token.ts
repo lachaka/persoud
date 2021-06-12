@@ -10,9 +10,10 @@ const generateToken = (res: Response, email: string) => {
     maxAge: 7 * 24 * 60 * 60 * 1000,
     secure: false,
     httpOnly: true,
+    sameSite: true,
   };
 
-  res.cookie('token', token, cookie);
+  return res.cookie('auth_cookie', token, cookie);
 };
 
 export default generateToken;

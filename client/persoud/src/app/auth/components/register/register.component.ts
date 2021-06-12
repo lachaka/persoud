@@ -1,5 +1,7 @@
 import { Subscription } from 'rxjs';
 import { Component, OnInit } from '@angular/core';
+import { CookieService } from 'ngx-cookie-service';
+import { Router } from '@angular/router';
 import { AuthService } from './../../services/auth.service';
 
 @Component({
@@ -11,17 +13,23 @@ export class RegisterComponent implements OnInit {
   user: { [key: string]: string };
   registerSub: Subscription | undefined;
 
-  constructor(private authService: AuthService) {
+  constructor(
+    private authService: AuthService,
+    private cookie: CookieService,
+    private router: Router
+  ) {
     this.user = {};
   }
 
-  ngOnInit(): void {}
+  ngOnInit(): void { }
 
   onSubmit() {
     this.registerSub = this.authService
       .register(this.user.email, this.user.password)
-      .subscribe((res) => {
-        console.log(res);
+      .subscribe((res: any) => {
+        if (res.success) {
+          this.router.navigateByUrl('/home');
+        }
       });
   }
 

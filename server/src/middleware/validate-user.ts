@@ -10,7 +10,7 @@ const validateUser = (req: Request, res: Response, next: () => void): void => {
   const isValidUser: string[] = controller.validateUser(user);
 
   if (isValidUser.length > 0) {
-    res.status(400).json({ error: 'Invalid email or password' });
+    res.status(400).json({ success: false, error: 'Invalid email or password' });
   } else {
     next();
   }

@@ -42,9 +42,7 @@ export default class UserController {
       errors.push('Email is empty');
     }
 
-    if (
-      !user.password.match(/^[a-zA-Z0-9*.!@#$%^&(){}[\]:;<>,.?\/~_+-=|].{8,}$/)
-    ) {
+    if (!user.password.match(/^[a-zA-Z0-9*.!@#$%^&(){}[\]:;<>,.?\/~_+-=|].{8,}$/)) {
       errors.push('Password must be at least 8 symbols');
     }
 
@@ -63,23 +61,23 @@ export default class UserController {
           user.password,
           (error: Error, result: boolean) => {
             if (error) {
-              res.status(400).json({ error: error });
+              res.status(400).json({ success: false, error: error });
             }
 
             if (result) {
               generateToken(res, email);
-              res.status(200).json({ message: 'Login successful' });
+              res.status(200).json({ success: true });
             } else {
-              res.status(401).json({ error: 'Invalid password' });
+              res.status(401).json({ success: false, error: 'Invalid password' });
             }
           }
         );
       } else {
-        res.status(401).json({ error: 'Invalid email' });
+        res.status(401).json({ success: false, error: 'Invalid email' });
       }
     } catch (error) {
       console.log(error);
-      res.status(401).json({ error: 'Invalid email' });
+      res.status(401).json({ success: false, error: 'Invalid email' });
     }
   };
 }

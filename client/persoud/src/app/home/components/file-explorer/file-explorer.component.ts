@@ -60,7 +60,7 @@ export class FileExplorerComponent implements OnInit {
     const dialogRef = this.dialog.open(UploadFileDialogComponent, data);
 
     this.unsubscriber.push(
-      dialogRef.afterClosed().subscribe((res) => {
+      dialogRef.afterClosed().subscribe(res => {
         if (res) {
           res.forEach((file) => {
             this.fileList.push({
@@ -160,8 +160,7 @@ export class FileExplorerComponent implements OnInit {
   }
 
   onContextMenuDownload(file: FileCard) {
-    this.fileService.downloadFile(file).subscribe(
-      (res) => {
+    this.fileService.downloadFile(file).subscribe(res => {
         const contentDisposition = res.headers.get('content-disposition');
         const filename = contentDisposition.split(';')[1].split('=')[1].trim();
         const blob: any = new Blob([res.body]);
