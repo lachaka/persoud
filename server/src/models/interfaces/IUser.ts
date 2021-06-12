@@ -1,9 +1,9 @@
 import { Document } from "mongoose";
 
-interface IUsers extends Document {
+interface IUser extends Document {
   email: string;
   password: string;
   files?: []
 }
 
-export default IUsers;
+export default IUser;

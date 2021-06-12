@@ -1,5 +1,6 @@
 import * as express from 'express';
 import * as cors from 'cors';
+import * as cookieParser from 'cookie-parser';
 
 require('dotenv').config();
 
@@ -11,6 +12,7 @@ const SERVER_PORT = process.env.SERVER_PORT || 3001;
 const app = express();
 
 app.use(cors({ origin: true, credentials: true }));
+app.use(cookieParser());
 app.use(express.json());
 
 app.use(routes);

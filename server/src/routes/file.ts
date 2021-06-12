@@ -1,10 +1,10 @@
-import * as express from 'express';
+import { Router }  from 'express';
 
 import upload from '../config/multer-config';
 import FileController from '../controllers/file-controller';
 
-const files = express.Router();
-const fileController = new FileController();
+const files = Router();
+const fileController: FileController = new FileController();
 
 files.post('/download', fileController.download);
 

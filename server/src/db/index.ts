@@ -1,7 +1,10 @@
-import * as mongoose from "mongoose";
+import * as mongoose from 'mongoose';
 
 const connectDb = () => {
-  return mongoose.connect(`${process.env.DB_URL}/${process.env.DB_NAME}`);
+  return mongoose.connect(`${process.env.DB_URL}/${process.env.DB_NAME}`, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  });
 };
 
 export default connectDb;
