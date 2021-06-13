@@ -18,9 +18,11 @@ const fileSchema = new Schema(
     size_bytes: {
       type: Number,
       required: true,
+      default: 0,
     },
     isDir: {
       type: Boolean,
+      default: false,
     },
     sharedWith: [{ type: Types.ObjectId, ref: User }],
   },

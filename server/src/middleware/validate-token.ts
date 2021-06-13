@@ -11,9 +11,15 @@ const verifyAuth = (req: Request, res: Response, next: () => void): void => {
         res.status(401).json({ success: false, message: 'Session expired' });
       }
 
-      User.findOne({ email: email.email }, (err, user) => {
-        res.locals.user = { id: user.id };
-        next();
+      User.findOne({ email: email.email }).then(user => {
+        if (user) {
+          res.locals.user = user;
+          next();
+        } else {
+          res.status(404).json({ success: false, message: 'Invalid user' });
+        }
+      }).catch(error => {
+        res.status(500).json({ success: false });
       });
     });
   } else {

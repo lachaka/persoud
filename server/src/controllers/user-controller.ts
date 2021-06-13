@@ -27,7 +27,7 @@ export default class UserController {
       });
 
       await newUser.save();
-      this.createUserFolder(newUser._id);
+      this.createUserFolder(newUser.id);
     });
   };
 

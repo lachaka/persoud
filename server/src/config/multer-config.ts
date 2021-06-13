@@ -6,13 +6,14 @@ const UPLOAD_DIR: string = process.env.UPLOAD_DIR;
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    const userPath = req.res.locals.user.id;
-    cb(null, UPLOAD_DIR + userPath + req.body.path);
+    const user = req.res.locals.user;
+    
+    cb(null, UPLOAD_DIR + user.id + req.body.path);
   },
   filename: (req, file, cb) => {
-    const userPath = req.res.locals.user.id;
+    const user = req.res.locals.user;
     
-    if (fs.existsSync(UPLOAD_DIR + userPath  + req.body.path + file.originalname)) {
+    if (fs.existsSync(UPLOAD_DIR + user.id  + req.body.path + file.originalname)) {
       req.res.locals.fileContains = true;
     } else {
       cb(null, file.originalname);

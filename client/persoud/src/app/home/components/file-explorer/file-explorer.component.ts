@@ -81,14 +81,11 @@ export class FileExplorerComponent implements OnInit {
         if (folder.length > 0) {
           this.unsubscriber.push(
             this.fileService.createFolder(folder, this.path).subscribe(
-              (res) => {
-                console.log(res);
+              (res: FileCard) => {
+                this.fileList.push(res);
               },
               (error) => {
                 console.log(error);
-              },
-              () => {
-                this.fileList.push();
               }
             )
           );
