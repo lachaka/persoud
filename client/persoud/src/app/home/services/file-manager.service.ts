@@ -47,7 +47,11 @@ export class FileManagerService {
   }
 
   downloadFile(file: FileCard) {
-    return this.http.post(`${this.baseUrl}/download`, file, {
+    const body = {
+      file: file._id,
+    };
+
+    return this.http.post(`${this.baseUrl}/download`, body, {
       observe: 'response',
       responseType: 'blob',
       withCredentials: true,

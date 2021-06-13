@@ -1,5 +1,5 @@
 export class FileCard {
-    id: string;
+    _id: string;
     name: string;
     size_bytes: number;
     isDir: boolean;

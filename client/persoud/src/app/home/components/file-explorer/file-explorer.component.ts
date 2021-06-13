@@ -147,16 +147,19 @@ export class FileExplorerComponent implements OnInit {
   }
 
   onContextMenuDownload(file: FileCard) {
-    this.fileService.downloadFile(file).subscribe(res => {
-        const contentDisposition = res.headers.get('content-disposition');
-        const filename = contentDisposition.split(';')[1].split('=')[1].trim();
-        const blob: any = new Blob([res.body]);
+    this.unsubscriber.push(
+      this.fileService.downloadFile(file)
+        .subscribe(res => {
+          const contentDisposition = res.headers.get('content-disposition');
+          const filename = file.isDir ? file.name + '.zip' : file.name;
+          const blob: any = new Blob([res.body]);
 
-        fileSaver.saveAs(blob, filename);
-      },
-      (err) => {
-        console.log(err);
-      }
+          fileSaver.saveAs(blob, filename);
+        },
+        (err) => {
+          console.log(err);
+        }
+      )
     );
   }
 

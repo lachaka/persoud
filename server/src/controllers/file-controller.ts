@@ -14,19 +14,19 @@ export default class FileController {
   construct() {}
 
   download = async (req: Request, res: Response) => {
-    res.setHeader('Access-Control-Expose-Headers', 'Content-Disposition')
+    res.setHeader('Access-Control-Expose-Headers', 'Content-Disposition');
     const user = res.locals.user;
-    const file = req.body;
+    const file =  res.locals.file;
 
     let location = UPLOAD_DIR + user.id + file.path + file.name;
 
     if (file.isDir) {
-      const outputPath = TEMP_DIR + `/${file.name}.zip`;
+      const outputPath = TEMP_DIR + `/${user._id}.zip`;
       const output = fs.createWriteStream(outputPath);
       const archive = archiver('zip');
 
       output.on('finish', () => {
-        return res.download(outputPath, (err) => {
+        res.download(outputPath, (err) => {
           if (err) {
             console.log(err);
           }
@@ -35,15 +35,15 @@ export default class FileController {
       });
 
       output.on('error', (err) => {
-        console.log(err)
-        return res.status(500).json({ success: false, error: err })
+        console.log(err);
+        res.status(500).json({ success: false, error: err });
       });
 
       archive.pipe(output);
       archive.directory(location, file.name);
       archive.finalize();
     } else {
-      return res.download(location);
+      res.download(location);
     }
   }
 
