@@ -3,6 +3,7 @@ import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { HttpEventType, HttpResponse } from '@angular/common/http';
 import { FormControl } from '@angular/forms';
 import { Subscription } from 'rxjs';
+import { FileCard } from '../../models/file';
 
 @Component({
   selector: 'app-upload-file-dialog',
@@ -13,16 +14,16 @@ export class UploadFileDialogComponent implements OnInit {
   multiple: boolean = true;
   files: File[];
   progressInfos: any[];
-  message: string[];
   unsubscriber: Subscription[];
   selectedFiles: FormControl;
+  responseFiles: FileCard[];
 
   constructor(@Inject(MAT_DIALOG_DATA) public data: any) {
     this.selectedFiles = new FormControl(this.files);
     this.files = [];
     this.progressInfos = [];
-    this.message = [];
     this.unsubscriber = [];
+    this.responseFiles = [];
   }
 
   ngOnInit(): void {
@@ -42,8 +43,6 @@ export class UploadFileDialogComponent implements OnInit {
   }
 
   uploadFiles(): void {
-    this.message = [];
-
     if (this.files.length > 0) {
       for (let i = 0; i < this.files.length; i++) {
         this.upload(i, this.files[i]);
@@ -63,14 +62,12 @@ export class UploadFileDialogComponent implements OnInit {
                 (100 * event.loaded) / event.total
               );
             } else if (event instanceof HttpResponse) {
-              const msg = `${file.name} has been uploaded successfully`;
-              this.message.push(msg);
+              this.responseFiles.push(event.body);
             }
           },
           (err: any) => {
             this.progressInfos[idx].value = 0;
             const msg = 'Could not upload the file: ' + file.name;
-            this.message.push(msg);
           }
         )
       );

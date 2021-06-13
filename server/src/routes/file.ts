@@ -17,6 +17,8 @@ files.post('/folder', verifyAuth, fileController.createFolder);
 
 files.post('/delete', verifyAuth, fileController.deleteFile);
 
-files.post('/shareFile', verifyAuth, fileController.shareFile);
+files.post('/share', verifyAuth, fileController.shareFile);
+
+files.post('/search', verifyAuth, fileController.search);
 
 export default files;

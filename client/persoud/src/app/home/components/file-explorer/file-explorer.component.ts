@@ -41,7 +41,9 @@ export class FileExplorerComponent implements OnInit {
     this.unsubscriber.push(
       this.fileService
         .listFiles(this.path, this.location)
-        .subscribe((files) => (this.fileList = files))
+        .subscribe((files: FileCard[]) => {
+          this.fileList = files
+        })
     );
   }
 
@@ -63,13 +65,7 @@ export class FileExplorerComponent implements OnInit {
       dialogRef.afterClosed().subscribe(res => {
         if (res) {
           res.forEach((file) => {
-            this.fileList.push({
-              name: file.name,
-              path: this.path,
-              size: file.size,
-              isDir: false,
-              upload_time: Date.now(),
-            });
+            this.fileList.push(file);
           });
         }
       })
@@ -92,13 +88,7 @@ export class FileExplorerComponent implements OnInit {
                 console.log(error);
               },
               () => {
-                this.fileList.push({
-                  name: folder,
-                  path: this.path,
-                  size: 0,
-                  isDir: true,
-                  upload_time: Date.now(),
-                });
+                this.fileList.push();
               }
             )
           );
@@ -186,7 +176,7 @@ export class FileExplorerComponent implements OnInit {
       this.fileList.sort((f1, f2) => f1.name.localeCompare(f2.name));
     }
     if (value == 'size') {
-      this.fileList = this.fileList.sort((f1, f2) => f1.size - f2.size);
+      this.fileList = this.fileList.sort((f1, f2) => f1.size_bytes - f2.size_bytes);
     }
 
     if (value == 'upload_time') {

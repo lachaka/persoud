@@ -1,10 +1,10 @@
-import { Schema, model } from 'mongoose';
+import { Schema, model, Types } from 'mongoose';
 import User from './user';
 
 const fileSchema = new Schema(
   {
     owner: {
-      type: String,
+      type: Types.ObjectId,
       requeired: true,
     },
     name: {
@@ -22,7 +22,7 @@ const fileSchema = new Schema(
     isDir: {
       type: Boolean,
     },
-    sharedWith: [{ type: Schema.Types.ObjectId, ref: User }],
+    sharedWith: [{ type: Types.ObjectId, ref: User }],
   },
   {
     timestamps: {
