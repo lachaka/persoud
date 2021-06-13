@@ -10,10 +10,10 @@ export default class FileController {
 
   download = async (req: Request, res: Response) => {
     res.setHeader('Access-Control-Expose-Headers', 'Content-Disposition');
-
+    const userId = res.locals.id;
     const file = req.body;
 
-    let location = UPLOAD_DIR + file.path + file.name;
+    let location = UPLOAD_DIR + userId + file.path + file.name;
 
     if (file.isDir) {
       const outputPath = TEMP_DIR + `/${file.name}.zip`;
@@ -47,53 +47,65 @@ export default class FileController {
   };
 
   getFiles = async (req: Request, res: Response) => {
+    const userId = res.locals.user.id;
     const path = req.body.path;
-    const location = UPLOAD_DIR + path;
+    const location = UPLOAD_DIR + res.locals.user.id + path;
 
-    fs.readdir(location, (err, files) => {
-      if (err) {
-        res.status(500).json({ success: false, error: err });
-      }
+    // fs.readdir(location, (err, files) => {
+    //   if (err) {
+    //     res.status(500).json({ success: false, error: err });
+    //   }
       
-      const filesInfo = files.map((file) => ({
-        name: file,
-        path: path,
-        size: fs.statSync(location).size,
-        isDir: fs.statSync(location + file).isDirectory(),
-      }));
+    //   const filesInfo = files.map((file) => ({
+    //     name: file,
+    //     path: path,
+    //     size: fs.statSync(location).size,
+    //     isDir: fs.statSync(location + file).isDirectory(),
+    //   }));
 
-      res.status(200).json({ files: filesInfo });
-    });
+    //   res.status(200).json({ files: filesInfo });
+    // });
   };
 
   createFolder = async (req: Request, res: Response) => {
-    const folder = req.body.folder;
+    const userId = res.locals.user.id;
     const path = req.body.path;
+    const folder = req.body.folder;
 
     fs.promises
-      .mkdir(UPLOAD_DIR + path + folder)
-      .then(() =>
-        res.status(200).json({ success: true, message: 'Folder created successfully' })
-      )
+      .mkdir(UPLOAD_DIR + userId + path + folder)
+      .then(() => {
+        res.status(200).json({ success: true, message: 'Folder created successfully' });
+      })
       .catch((err) => res.status(500).json({ success: false, error: err }));
   };
 
   deleteFile = async (req: Request, res: Response) => {
+    const userId = res.locals.user.id;
     const file = req.body;
+    const fileLocation = UPLOAD_DIR + userId + file.path + file.name;
 
     if (file.isDir) {
       fs.promises
-        .rm(UPLOAD_DIR + file.path + file.name, {
+        .rm(fileLocation, {
           recursive: true,
           force: true,
         })
-        .then(() => res.status(200).json({ success: true, message: 'File is deleted' }))
+        .then(() => {
+          res.status(200).json({ success: true, message: 'File is deleted' })
+        })
         .catch((err) => res.status(500).json({ success: false, error: err }));
     } else {
       fs.promises
-        .unlink(UPLOAD_DIR + file.path + file.name)
-        .then(() => res.status(200).json({ success: true, message: 'File is deleted' }))
+        .unlink(fileLocation)
+        .then(() => {
+          res.status(200).json({ success: true, message: 'File is deleted' })
+        })
         .catch((err) => res.status(500).json({ success: false, error: err }));
     }
+  };
+
+  shareFile = async (req: Request, res: Response) => {
+    
   };
 }

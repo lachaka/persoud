@@ -20,6 +20,7 @@ export class FileManagerService {
       reportProgress: true,
       observe: 'events',
       responseType: 'json',
+      withCredentials: true
     });
   }
 
@@ -29,7 +30,7 @@ export class FileManagerService {
       location,
     };
 
-    return this.http.post<FileCard[]>(`${this.baseUrl}`, body);
+    return this.http.post<FileCard[]>(`${this.baseUrl}`, body, { withCredentials: true });
   }
 
   createFolder(folder: string, path: string) {
@@ -38,17 +39,18 @@ export class FileManagerService {
       path,
     };
 
-    return this.http.post(`${this.baseUrl}/folder`, body);
+    return this.http.post(`${this.baseUrl}/folder`, body, { withCredentials: true });
   }
 
   deleteFile(file: FileCard) {
-    return this.http.post(`${this.baseUrl}/delete`, file);
+    return this.http.post(`${this.baseUrl}/delete`, file, { withCredentials: true });
   }
 
   downloadFile(file: FileCard) {
     return this.http.post(`${this.baseUrl}/download`, file, {
       observe: 'response',
       responseType: 'blob',
+      withCredentials: true,
     });
   }
 

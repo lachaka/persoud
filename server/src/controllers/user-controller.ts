@@ -32,7 +32,7 @@ export default class UserController {
   };
 
   private createUserFolder(id: Types.ObjectId) {
-    fs.promises.mkdir(UPLOAD_DIR + '/' + id).catch((err) => console.log(err));
+    fs.promises.mkdir(UPLOAD_DIR + id).catch((err) => console.log(err));
   }
 
   public validateUser(user: IUser): string[] {

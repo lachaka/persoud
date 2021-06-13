@@ -2,18 +2,21 @@ import { Router }  from 'express';
 
 import upload from '../config/multer-config';
 import FileController from '../controllers/file-controller';
+import verifyAuth from '../middleware/validate-token';
 
 const files = Router();
 const fileController: FileController = new FileController();
 
-files.post('/download', fileController.download);
+files.post('/download', verifyAuth, fileController.download);
 
-files.post('/upload', upload.single('file'), fileController.uploadFile);
+files.post('/upload', verifyAuth, upload.single('file'), fileController.uploadFile);
 
-files.post('/', fileController.getFiles);
+files.post('/', verifyAuth, fileController.getFiles);
 
-files.post('/folder', fileController.createFolder);
+files.post('/folder', verifyAuth, fileController.createFolder);
 
-files.post('/delete', fileController.deleteFile);
+files.post('/delete', verifyAuth, fileController.deleteFile);
+
+files.post('/shareFile', verifyAuth, fileController.shareFile);
 
 export default files;
