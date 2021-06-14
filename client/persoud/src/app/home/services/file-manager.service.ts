@@ -42,8 +42,12 @@ export class FileManagerService {
     return this.http.post(`${this.baseUrl}/folder`, body, { withCredentials: true });
   }
 
-  deleteFile(file: FileCard) {
-    return this.http.post(`${this.baseUrl}/delete`, file, { withCredentials: true });
+  deleteFile(fileId: string) {    
+    const body = {
+      file: fileId,
+    };
+
+    return this.http.post(`${this.baseUrl}/delete`, body, { withCredentials: true });
   }
 
   downloadFile(file: FileCard) {

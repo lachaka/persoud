@@ -143,9 +143,9 @@ export default class FileController {
   }
 
   deleteFile = async (req: Request, res: Response) => {
-    const userId = res.locals.user.id
-    const file = req.body
-    const fileLocation = UPLOAD_DIR + userId + file.path + file.name
+    const user: IUser = res.locals.user;
+    const file: IFile =  res.locals.file;
+    const fileLocation = UPLOAD_DIR + user.id + file.path + file.name;
 
     if (file.isDir) {
       fs.promises
@@ -153,18 +153,59 @@ export default class FileController {
           recursive: true,
           force: true,
         })
-        .then(() => {
-          res.status(200).json({ success: true, message: 'File is deleted' })
+        .then(() => {          
+          res.status(200).json({
+            success: true,
+            message: 'File is deleted'
+          });
         })
-        .catch((err) => res.status(500).json({ success: false, error: err }))
+        .catch((err) => res.status(500).json({
+          success: false,
+          error: 'Could not delete file from db',
+        })
+      );
     } else {
       fs.promises
         .unlink(fileLocation)
-        .then(() => {
-          res.status(200).json({ success: true, message: 'File is deleted' })
+        .then(() => {        
+          this.removeFileFromDb(file, user);
+         
+          res.status(200).json({ 
+            success: true,
+            message: 'File is deleted'
+          });
         })
-        .catch((err) => res.status(500).json({ success: false, error: err }))
+        .catch((err) => res.status(500).json({ 
+          success: false, 
+          error: err,
+        })
+      );
     }
+  }
+
+  private removeFileFromDb(file: IFile, user: IUser) {    
+    file.sharedWith.forEach(uid => {
+      User.findByIdAndUpdate(uid, { $pull: { files: file.id }}, (err, data) => {
+        if (err) { 
+          throw err;
+        }
+      });
+    });
+    
+    User.findByIdAndUpdate(user.id, { $pull: { files: file.id }}, (err, data) => {
+      if (err) { 
+        throw err;
+      }
+    });
+
+    File.findByIdAndRemove(file.id, (err, file) => {
+      if (err) {
+        throw err;
+      }
+    });
+  }
+
+  private deleteFolderFromDb(file: IFile, user: IUser) {
   }
 
   shareFile = async (req: Request, res: Response) => {}

@@ -77,7 +77,6 @@ export class FileExplorerComponent implements OnInit {
 
     this.unsubscriber.push(
       dialogRef.afterClosed().subscribe((folder: string) => {
-        console.log(folder);
         if (folder.length > 0) {
           this.unsubscriber.push(
             this.fileService.createFolder(folder, this.path).subscribe(
@@ -163,10 +162,10 @@ export class FileExplorerComponent implements OnInit {
     );
   }
 
-  onContextMenuRemove(file: FileCard) {
+  onContextMenuRemove(file) {
     this.unsubscriber.push(
-      this.fileService.deleteFile(file).subscribe(() => {
-        this.fileList = this.fileList.filter((f) => f.name !== file.name);
+      this.fileService.deleteFile(file.id).subscribe(() => {
+        this.fileList = this.fileList.filter((f) => f._id !== file._id);
       })
     );
   }
