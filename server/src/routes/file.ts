@@ -1,19 +1,27 @@
-import * as express from 'express';
+import { Router }  from 'express';
 
 import upload from '../config/multer-config';
 import FileController from '../controllers/file-controller';
+import verifyAuth from '../middleware/validate-token';
+import validateUserFile from '../middleware/validate-user-file';
 
-const files = express.Router();
-const fileController = new FileController();
+const files = Router();
+const fileController: FileController = new FileController();
 
-files.post('/download', fileController.download);
+files.post('/download', verifyAuth, validateUserFile, fileController.download);
 
-files.post('/upload', upload.single('file'), fileController.uploadFile);
+files.post('/upload', verifyAuth, upload.single('file'), fileController.uploadFile);
 
-files.post('/', fileController.getFiles);
+files.post('/', verifyAuth, fileController.getFiles);
 
-files.post('/folder', fileController.createFolder);
+files.post('/folder', verifyAuth, fileController.createFolder);
 
-files.post('/delete', fileController.deleteFile);
+files.post('/delete', verifyAuth, validateUserFile, fileController.deleteFile);
+
+files.post('/share', verifyAuth, validateUserFile, fileController.shareFile);
+
+files.get('/shared', verifyAuth, fileController.sharedFiles);
+
+files.post('/search', verifyAuth, fileController.search);
 
 export default files;

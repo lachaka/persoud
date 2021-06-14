@@ -131,3 +131,4 @@ dist
 /dist  
 /tmp  
 server/uploads
+.vscode/settings.json

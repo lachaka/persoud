@@ -1,5 +1,5 @@
 import { ShareWithDialogComponent } from '../../modals/share-with-dialog/share-with-dialog.component';
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, Input, OnInit, ViewChild } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { MatDialog } from '@angular/material/dialog';
 import { MatMenuTrigger } from '@angular/material/menu';
@@ -16,11 +16,13 @@ import { FileManagerService } from '../../services/file-manager.service';
   styleUrls: ['./file-explorer.component.css'],
 })
 export class FileExplorerComponent implements OnInit {
-  path: string;
-  location: string;
-  parrent: string[];
-  fileList: FileCard[];
-  unsubscriber: Subscription[];
+  @Input()
+  public resultGridList : Array<any> = [];
+
+  public fileList: FileCard[];
+  public path: string;
+  private parrent: string[];
+  private unsubscriber: Subscription[];
 
   @ViewChild(MatMenuTrigger) contextMenu: MatMenuTrigger;
 
@@ -31,7 +33,6 @@ export class FileExplorerComponent implements OnInit {
     private fileService: FileManagerService
   ) {
     this.path = '/';
-    this.location = 'personal';
     this.parrent = [];
     this.fileList = [];
     this.unsubscriber = [];
@@ -40,8 +41,20 @@ export class FileExplorerComponent implements OnInit {
   ngOnInit(): void {
     this.unsubscriber.push(
       this.fileService
-        .listFiles(this.path, this.location)
-        .subscribe((files) => (this.fileList = files))
+        .listFiles(this.path)
+        .subscribe((files: FileCard[]) => {
+          this.fileList = files
+        })
+    );
+  }
+
+  receiveSearch($event) {
+    this.unsubscriber.push(
+      this.fileService.search($event).subscribe((files: FileCard[]) => {
+        if (files) {
+          this.fileList =files;
+        }
+      })
     );
   }
 
@@ -60,16 +73,10 @@ export class FileExplorerComponent implements OnInit {
     const dialogRef = this.dialog.open(UploadFileDialogComponent, data);
 
     this.unsubscriber.push(
-      dialogRef.afterClosed().subscribe((res) => {
+      dialogRef.afterClosed().subscribe(res => {
         if (res) {
           res.forEach((file) => {
-            this.fileList.push({
-              name: file.name,
-              path: this.path,
-              size: file.size,
-              isDir: false,
-              upload_time: Date.now(),
-            });
+            this.fileList.push(file);
           });
         }
       })
@@ -81,24 +88,14 @@ export class FileExplorerComponent implements OnInit {
 
     this.unsubscriber.push(
       dialogRef.afterClosed().subscribe((folder: string) => {
-        console.log(folder);
         if (folder.length > 0) {
           this.unsubscriber.push(
             this.fileService.createFolder(folder, this.path).subscribe(
-              (res) => {
-                console.log(res);
+              (res: FileCard) => {
+                this.fileList.push(res);
               },
               (error) => {
                 console.log(error);
-              },
-              () => {
-                this.fileList.push({
-                  name: folder,
-                  path: this.path,
-                  size: 0,
-                  isDir: true,
-                  upload_time: Date.now(),
-                });
               }
             )
           );
@@ -113,7 +110,7 @@ export class FileExplorerComponent implements OnInit {
 
     this.unsubscriber.push(
       this.fileService
-        .listFiles(this.path, this.location)
+        .listFiles(this.path)
         .subscribe((files) => (this.fileList = files))
     );
   }
@@ -124,7 +121,7 @@ export class FileExplorerComponent implements OnInit {
 
       this.unsubscriber.push(
         this.fileService
-          .listFiles(this.path, this.location)
+          .listFiles(this.path)
           .subscribe((files) => (this.fileList = files))
       );
     }
@@ -145,13 +142,17 @@ export class FileExplorerComponent implements OnInit {
 
   onContextMenuShare(file: FileCard) {
     const dialogRef = this.dialog.open(ShareWithDialogComponent);
-
+  
     this.unsubscriber.push(
       dialogRef.afterClosed().subscribe((email: string) => {
         if (email.length > 0) {
           this.unsubscriber.push(
-            this.fileService.shareFile(file, email).subscribe((error) => {
-              console.log(error);
+            this.fileService.shareFile(file._id, email).subscribe((res:any) => {
+              if (res.success) {
+                console.log('File shared successfully');
+              } else {
+                console.log('Error while sharing file');
+              }
             })
           );
         }
@@ -160,24 +161,26 @@ export class FileExplorerComponent implements OnInit {
   }
 
   onContextMenuDownload(file: FileCard) {
-    this.fileService.downloadFile(file).subscribe(
-      (res) => {
-        const contentDisposition = res.headers.get('content-disposition');
-        const filename = contentDisposition.split(';')[1].split('=')[1].trim();
-        const blob: any = new Blob([res.body]);
+    this.unsubscriber.push(
+      this.fileService.downloadFile(file)
+        .subscribe(res => {
+          const contentDisposition = res.headers.get('content-disposition');
+          const filename = file.isDir ? file.name + '.zip' : file.name;
+          const blob: any = new Blob([res.body]);
 
-        fileSaver.saveAs(blob, filename);
-      },
-      (err) => {
-        console.log(err);
-      }
+          fileSaver.saveAs(blob, filename);
+        },
+        (err) => {
+          console.log(err);
+        }
+      )
     );
   }
 
-  onContextMenuRemove(file: FileCard) {
+  onContextMenuRemove(file) {
     this.unsubscriber.push(
-      this.fileService.deleteFile(file).subscribe(() => {
-        this.fileList = this.fileList.filter((f) => f.name !== file.name);
+      this.fileService.deleteFile(file.id).subscribe(() => {
+        this.fileList = this.fileList.filter((f) => f._id !== file._id);
       })
     );
   }
@@ -187,7 +190,7 @@ export class FileExplorerComponent implements OnInit {
       this.fileList.sort((f1, f2) => f1.name.localeCompare(f2.name));
     }
     if (value == 'size') {
-      this.fileList = this.fileList.sort((f1, f2) => f1.size - f2.size);
+      this.fileList = this.fileList.sort((f1, f2) => f1.size_bytes - f2.size_bytes);
     }
 
     if (value == 'upload_time') {
@@ -197,7 +200,29 @@ export class FileExplorerComponent implements OnInit {
     }
   }
 
-  myFiles(): void {}
+  myFiles(): void {
+    this.path = '/';
+    this.unsubscriber.push(
+      this.fileService
+        .listFiles(this.path)
+        .subscribe((files: FileCard[]) => {
+          this.fileList = files
+        })
+    );
+  }
 
-  sharedFiles(): void {}
+  sharedFiles(): void {
+    this.unsubscriber.push(
+      this.fileService
+        .sharedFiles()
+        .subscribe((files: FileCard[]) => {
+          this.fileList = files
+        })
+    );
+  }
+
+
+  handleResults(searchObj) {
+    this.fileList = searchObj;
+  }
 }

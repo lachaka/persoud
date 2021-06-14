@@ -5,7 +5,7 @@ import { HttpClient } from '@angular/common/http';
   providedIn: 'root'
 })
 export class AuthService {
-  private baseUrl = 'http://localhost:3000/user';
+  private baseUrl = 'http://localhost:3000';
 
   constructor(private http: HttpClient) { }
 
@@ -15,7 +15,7 @@ export class AuthService {
       password
     };
 
-    return this.http.post(`${this.baseUrl}/login`, body);
+    return this.http.post(`${this.baseUrl}/login`, body, { withCredentials: true });
   }
 
   register(email: string, password: string) {
@@ -24,14 +24,10 @@ export class AuthService {
       password
     };
 
-    return this.http.post(`${this.baseUrl}/register`, body); 
+    return this.http.post(`${this.baseUrl}/register`, body, { withCredentials: true }); 
   }
 
   logout() {
-    const body = {
-      logout: 'logout'
-    };
-
-    return this.http.post(`${this.baseUrl}/logout`, body);
+    return this.http.post(`${this.baseUrl}/logout`, {}, { withCredentials: true });
   }
 }

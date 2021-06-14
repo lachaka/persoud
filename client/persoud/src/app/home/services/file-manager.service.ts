@@ -20,16 +20,16 @@ export class FileManagerService {
       reportProgress: true,
       observe: 'events',
       responseType: 'json',
+      withCredentials: true
     });
   }
 
-  listFiles(path: string, location: string) {
+  listFiles(path: string) {
     const body = {
       path,
-      location,
     };
 
-    return this.http.post<FileCard[]>(`${this.baseUrl}`, body);
+    return this.http.post<FileCard[]>(`${this.baseUrl}`, body, { withCredentials: true });
   }
 
   createFolder(folder: string, path: string) {
@@ -38,26 +38,43 @@ export class FileManagerService {
       path,
     };
 
-    return this.http.post(`${this.baseUrl}/folder`, body);
+    return this.http.post(`${this.baseUrl}/folder`, body, { withCredentials: true });
   }
 
-  deleteFile(file: FileCard) {
-    return this.http.post(`${this.baseUrl}/delete`, file);
+  deleteFile(fileId: string) {    
+    const body = {
+      file: fileId,
+    };
+
+    return this.http.post(`${this.baseUrl}/delete`, body, { withCredentials: true });
   }
 
   downloadFile(file: FileCard) {
-    return this.http.post(`${this.baseUrl}/download`, file, {
+    const body = {
+      file: file._id,
+    };
+
+    return this.http.post(`${this.baseUrl}/download`, body, {
       observe: 'response',
       responseType: 'blob',
+      withCredentials: true,
     });
   }
 
-  shareFile(file: FileCard, email: string) {
+  shareFile(fileId: string, email: string) {
     const body = {
-      file,
-      email
+      file: fileId,
+      email: email,
     };
+    
+    return this.http.post(`${this.baseUrl}/share`, body, { withCredentials: true });
+  }
 
-    return this.http.post(`${this.baseUrl}/share`, body);
+  sharedFiles() {
+    return this.http.get(`${this.baseUrl}/shared`, { withCredentials: true });
+  }
+
+  search(filename: string) {
+    return this.http.post(`${this.baseUrl}/search`, { filename }, { withCredentials: true });
   }
 }

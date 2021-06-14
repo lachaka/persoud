@@ -1,10 +1,17 @@
-import { Schema, model } from 'mongoose';
-import User from './user';
+import { Schema, model, Types, Document, Model } from 'mongoose';
+import IFile from './interfaces/IFile';
 
-const fileSchema = new Schema(
-  {
+export interface FileDocument extends IFile, Document {
+  _id: string
+}
+
+export interface FileModel extends Model<FileDocument> {
+
+}
+
+const fileSchema = new Schema<FileDocument, FileModel>({
     owner: {
-      type: String,
+      type: Types.ObjectId,
       requeired: true,
     },
     name: {
@@ -18,11 +25,13 @@ const fileSchema = new Schema(
     size_bytes: {
       type: Number,
       required: true,
+      default: 0,
     },
     isDir: {
       type: Boolean,
+      default: false,
     },
-    sharedWith: [{ type: Schema.Types.ObjectId, ref: User }],
+    sharedWith: [{ type: Types.ObjectId, ref: 'User' }],
   },
   {
     timestamps: {
@@ -32,8 +41,5 @@ const fileSchema = new Schema(
   }
 );
 
-const File = model('File', fileSchema);
+export const File = model<FileDocument>('File', fileSchema);
 
-export { fileSchema };
-
-export default File;

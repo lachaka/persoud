@@ -8,11 +8,8 @@ p {
 }
 
 .file-icon {
-    margin: auto;
-    display: block;
-}
-
-.download {
+    text-align: center;
+    margin: auto 10px;
     display: inline;
 }
 

@@ -1,7 +1,7 @@
 export class FileCard {
+    _id: string;
     name: string;
-    path: string;
-    size: number;
+    size_bytes: number;
     isDir: boolean;
     upload_time: number;
 }

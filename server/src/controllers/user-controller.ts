@@ -1,92 +1,83 @@
 import { Request, Response } from 'express';
+import { Types } from 'mongoose';
+import * as fs from 'fs';
 import * as bcrypt from 'bcrypt';
-import * as mongoose from 'mongoose';
-import User from '../models/user';
+import { User, UserDocument } from '../models/user';
 import IUser from '../models/interfaces/IUser';
+import generateToken from './generate-token';
 
-export default class LoginLogoutController {
+const UPLOAD_DIR: string = process.env.UPLOAD_DIR;
+
+export default class UserController {
   construct() {}
 
-  public async findUser(email: string) {
+  public async findUser(email: string): Promise<UserDocument> {
     return User.findOne({ email: email }).exec();
   }
 
-  public async createUser(user) {}
-
-  register = async (req: Request, res: Response) => {
-    const email = req.body.email;
-    const password = req.body.password;
-    console.log(req.body);
-    this.notExists(email)
-      .then(() => {
-        const newUser = new User({
-          email,
-          password: bcrypt.password,
-        });
-
-        // add user
-        res.status(200).send('User created.');
-      })
-      .catch(() => {
-        res.status(400).send('User already exists.');
-      });
-  };
-
-  notExists = (emailVar: string) => {
-    return new Promise(async (res, rej) => {
-      const user = await User.findOne({ email: emailVar }).exec();
-      if (!user) {
-        res(true);
+  createUser = async (user: IUser) => {
+    bcrypt.hash(user.password, 10, async (error: Error, hash: string) => {
+      if (error) {
+        return error;
       }
-      rej('User does not exists');
-    });
-  };
 
-  exists = (emailVar: string) => {
-    return new Promise(async (res, rej) => {
-      const user = await User.findOne({ email: emailVar }).exec();
-      if (user) {
-        res(true);
-      }
-      rej('User does not exists');
-    });
-  };
-
-  addNewUser = async (userVar: IUser) => {
-    return new Promise(async (res, rej) => {
       const newUser = new User({
-        _id: new mongoose.Types.ObjectId(),
-        email: userVar.email,
-        password: userVar.password,
+        email: user.email,
+        password: hash,
       });
 
-      await newUser
-        .save()
-        .then(() => {
-          res(true);
-        })
-        .catch(() => {
-          rej('Database error: user not added');
-        });
+      await newUser.save();
+      this.createUserFolder(newUser.id);
     });
   };
 
-  login = async (req: Request, res: Response) => {
-    const emailVar = req.body.email;
-    const passwordVar = req.body.password;
+  private createUserFolder(id: Types.ObjectId) {
+    fs.promises.mkdir(UPLOAD_DIR + id).catch((err) => console.log(err));
+  }
 
-    this.exists(emailVar).then(async () => {
-      const user = await User.findOne({ email: emailVar }).exec();
+  public validateUser(user: IUser): string[] {
+    const errors: string[] = [];
 
-      if (user && (await bcrypt.compare(passwordVar, user.password))) {
-        res.status(200).send('Login success!');
+    if (!user.email) {
+      errors.push('Email is empty');
+    }
+
+    if (!user.password.match(/^[a-zA-Z0-9*.!@#$%^&(){}[\]:;<>,.?\/~_+-=|].{8,}$/)) {
+      errors.push('Password must be at least 8 symbols');
+    }
+
+    return errors;
+  }
+
+  login = async (req: Request, res: Response, next: () => void) => {
+    const { email, password } = req.body;
+
+    try {
+      const user = await this.findUser(email);
+
+      if (user) {
+        bcrypt.compare(
+          password,
+          user.password,
+          (error: Error, result: boolean) => {
+            if (error) {
+              res.status(400).json({ success: false, error: error });
+            }
+
+            if (result) {
+              generateToken(res, email);
+              res.status(200).json({ success: true });
+            } else {
+              res.status(401).json({ success: false, error: 'Invalid password' });
+            }
+          }
+        );
+      } else {
+        res.status(401).json({ success: false, error: 'Invalid email' });
       }
-      res.status(400).send('Invalid login');
-    });
-  };
-
-  logout = async (req: Request, res: Response) => {
-    res.clearCookie(process.env.SESSION_NAME);
-    res.status(200);
+    } catch (error) {
+      console.log(error);
+      res.status(401).json({ success: false, error: 'Invalid email' });
+    }
   };
 }

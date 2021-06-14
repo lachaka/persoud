@@ -1,9 +1,11 @@
-import { Document } from "mongoose";
+import { Document } from 'mongoose';
+import IFile from './IFile';
 
-interface IUsers extends Document {
-  email: string;
-  password: string;
-  files: []
+interface IUser {
+  _id: string,
+  email: string,
+  password: string,
+  files?: Set<IFile>,
 }
 
-export default IUsers;
+export default IUser;
