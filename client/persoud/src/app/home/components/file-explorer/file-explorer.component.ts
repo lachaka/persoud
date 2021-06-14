@@ -52,10 +52,7 @@ export class FileExplorerComponent implements OnInit {
     this.unsubscriber.push(
       this.fileService.search($event).subscribe((files: FileCard[]) => {
         if (files) {
-          this.fileList = [];
-          files.forEach((file) => {
-            this.fileList.push(file);
-          });
+          this.fileList =files;
         }
       })
     );

@@ -253,7 +253,7 @@ export default class FileController {
 
   search = async (req: Request, res: Response) => {
     const user = res.locals.user;
-    console.log(req.body.filename);
+    
     User.findById(user.id).populate({
         path: 'files', 
         match: { 'name': req.body.filename }, 
