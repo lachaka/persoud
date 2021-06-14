@@ -1,10 +1,11 @@
 import { Document } from 'mongoose';
 import IFile from './IFile';
 
-interface IUser extends Document {
+interface IUser {
+  _id: string,
   email: string,
   password: string,
-  files?: Array<IFile>,
+  files?: Set<IFile>,
 }
 
 export default IUser;

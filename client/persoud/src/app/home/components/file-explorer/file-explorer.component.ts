@@ -17,7 +17,6 @@ import { FileManagerService } from '../../services/file-manager.service';
 })
 export class FileExplorerComponent implements OnInit {
   path: string;
-  location: string;
   parrent: string[];
   fileList: FileCard[];
   unsubscriber: Subscription[];
@@ -31,7 +30,6 @@ export class FileExplorerComponent implements OnInit {
     private fileService: FileManagerService
   ) {
     this.path = '/';
-    this.location = 'personal';
     this.parrent = [];
     this.fileList = [];
     this.unsubscriber = [];
@@ -40,7 +38,7 @@ export class FileExplorerComponent implements OnInit {
   ngOnInit(): void {
     this.unsubscriber.push(
       this.fileService
-        .listFiles(this.path, this.location)
+        .listFiles(this.path)
         .subscribe((files: FileCard[]) => {
           this.fileList = files
         })
@@ -99,7 +97,7 @@ export class FileExplorerComponent implements OnInit {
 
     this.unsubscriber.push(
       this.fileService
-        .listFiles(this.path, this.location)
+        .listFiles(this.path)
         .subscribe((files) => (this.fileList = files))
     );
   }
@@ -110,7 +108,7 @@ export class FileExplorerComponent implements OnInit {
 
       this.unsubscriber.push(
         this.fileService
-          .listFiles(this.path, this.location)
+          .listFiles(this.path)
           .subscribe((files) => (this.fileList = files))
       );
     }
@@ -131,13 +129,17 @@ export class FileExplorerComponent implements OnInit {
 
   onContextMenuShare(file: FileCard) {
     const dialogRef = this.dialog.open(ShareWithDialogComponent);
-
+  
     this.unsubscriber.push(
       dialogRef.afterClosed().subscribe((email: string) => {
         if (email.length > 0) {
           this.unsubscriber.push(
-            this.fileService.shareFile(file, email).subscribe((error) => {
-              console.log(error);
+            this.fileService.shareFile(file._id, email).subscribe((res:any) => {
+              if (res.success) {
+                console.log('File shared successfully');
+              } else {
+                console.log('Error while sharing file');
+              }
             })
           );
         }
@@ -185,7 +187,24 @@ export class FileExplorerComponent implements OnInit {
     }
   }
 
-  myFiles(): void {}
+  myFiles(): void {
+    this.path = '/';
+    this.unsubscriber.push(
+      this.fileService
+        .listFiles(this.path)
+        .subscribe((files: FileCard[]) => {
+          this.fileList = files
+        })
+    );
+  }
 
-  sharedFiles(): void {}
+  sharedFiles(): void {
+    this.unsubscriber.push(
+      this.fileService
+        .sharedFiles()
+        .subscribe((files: FileCard[]) => {
+          this.fileList = files
+        })
+    );
+  }
 }

@@ -1,13 +1,14 @@
 import { Document } from 'mongoose'
 import IUser from './IUser';
 
-interface IFile extends Document {
+interface IFile {
+  _id: string,
   owner: string,
   name: string,
   path: string,
   size_bytes: number,
   isDir: boolean,
-  sharedWith?: Array<IUser>,
+  sharedWith?: Set<IUser>,
   createdAt?: number,
 }
 

@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import * as jwt from 'jsonwebtoken';
-import User from '../models/user';
+import { User } from '../models/user';
 
 const verifyAuth = (req: Request, res: Response, next: () => void): void => {
   const token = req.cookies.auth_cookie;

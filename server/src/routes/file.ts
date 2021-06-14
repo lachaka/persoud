@@ -18,7 +18,9 @@ files.post('/folder', verifyAuth, fileController.createFolder);
 
 files.post('/delete', verifyAuth, validateUserFile, fileController.deleteFile);
 
-files.post('/share', verifyAuth, fileController.shareFile);
+files.post('/share', verifyAuth, validateUserFile, fileController.shareFile);
+
+files.get('/shared', verifyAuth, fileController.sharedFiles);
 
 files.post('/search', verifyAuth, fileController.search);
 

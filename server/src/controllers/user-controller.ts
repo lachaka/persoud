@@ -2,7 +2,7 @@ import { Request, Response } from 'express';
 import { Types } from 'mongoose';
 import * as fs from 'fs';
 import * as bcrypt from 'bcrypt';
-import User from '../models/user';
+import { User, UserDocument } from '../models/user';
 import IUser from '../models/interfaces/IUser';
 import generateToken from './generate-token';
 
@@ -11,9 +11,9 @@ const UPLOAD_DIR: string = process.env.UPLOAD_DIR;
 export default class UserController {
   construct() {}
 
-  findUser = async (email: string) => {
-    return await User.findOne({ email: email }).exec();
-  };
+  public async findUser(email: string): Promise<UserDocument> {
+    return User.findOne({ email: email }).exec();
+  }
 
   createUser = async (user: IUser) => {
     bcrypt.hash(user.password, 10, async (error: Error, hash: string) => {

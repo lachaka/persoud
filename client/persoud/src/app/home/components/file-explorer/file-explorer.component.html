@@ -4,12 +4,12 @@
   <div class="side-nav">
     <mat-selection-list #shoes [multiple]="false">
       <mat-list-option>
-        <div class="nav-item">
+        <div class="nav-item" (click)="myFiles()">
           <span class="material-icons-outlined">cloud</span>My files
         </div>
       </mat-list-option>
       <mat-list-option class="nav-item">
-        <div class="nav-item">
+        <div class="nav-item" (click)="sharedFiles()">
           <span class="material-icons-outlined">folder_shared</span>Shared files
         </div>
       </mat-list-option>

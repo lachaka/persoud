@@ -24,10 +24,9 @@ export class FileManagerService {
     });
   }
 
-  listFiles(path: string, location: string) {
+  listFiles(path: string) {
     const body = {
       path,
-      location,
     };
 
     return this.http.post<FileCard[]>(`${this.baseUrl}`, body, { withCredentials: true });
@@ -62,12 +61,16 @@ export class FileManagerService {
     });
   }
 
-  shareFile(file: FileCard, email: string) {
+  shareFile(fileId: string, email: string) {
     const body = {
-      file,
-      email
+      file: fileId,
+      email: email,
     };
+    
+    return this.http.post(`${this.baseUrl}/share`, body, { withCredentials: true });
+  }
 
-    return this.http.post(`${this.baseUrl}/share`, body);
+  sharedFiles() {
+    return this.http.get(`${this.baseUrl}/shared`, { withCredentials: true });
   }
 }

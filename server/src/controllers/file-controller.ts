@@ -2,10 +2,10 @@ import { Request, Response } from 'express';
 import * as fs from 'fs';
 import * as archiver from 'archiver';
 import { Types } from 'mongoose';
-import File from '../models/file';
-import User from '../models/user';
 import IFile from '../models/interfaces/IFile';
 import IUser from '../models/interfaces/IUser';
+import { User, UserDocument, UserModel } from '../models/user';
+import { File, FileDocument } from '../models/file';
 
 const UPLOAD_DIR = process.env.UPLOAD_DIR;
 const TEMP_DIR = process.env.TEMP_DIR;
@@ -48,11 +48,17 @@ export default class FileController {
   }
 
   uploadFile = async (req: Request, res: Response) => {
+    if (res.locals.fileContains) {
+      res.status(400).json({ 
+        success: false,
+        error: 'File already contains in the current directory'
+      });
+    } 
     const { filename, size } = req.file;
     const user = res.locals.user;
     const path = req.body.path
 
-    const file: IFile = new File({
+    const file = new File({
       _id: new Types.ObjectId(),
       owner: user.id,
       name: filename,
@@ -64,13 +70,13 @@ export default class FileController {
 
     file.save();
 
-    user.files.push(file.id);
+    user.files.push(file._id);
     user.save();
 
     this.updateFolderSize(file, true);
 
     res.status(200).json({ 
-      id: file.id,
+      id: file._id,
       name: file.name,
       isDir: file.isDir,
       size_bytes: file.size_bytes,
@@ -78,10 +84,9 @@ export default class FileController {
     });
   };
 
-  private async updateFolderSize(file: IFile, upload: boolean) {
+  private async updateFolderSize(file, upload: boolean) {
     if (file.path !== '/') {
-      File.findOneAndUpdate({ owner: file.owner, path: file.path })
-        .then((result: IFile, err: Error) => {
+      File.updateOne({ owner: file.owner, path: file.path }, (result, err: Error) => {
           if (upload) {
             result.size_bytes += file.size_bytes;
           } else {
@@ -90,16 +95,21 @@ export default class FileController {
           result.save();
         });
     }
+
+    // if (file.path !== '/') {
+    //   File.findOneAndUpdate({ owner: file.owner, path: file.path })
+    //     .then((result, err: Error) => {
+    //       if (upload) {
+    //         result.size_bytes += file.size_bytes;
+    //       } else {
+    //         result.size_bytes -= file.size_bytes;
+    //       }
+    //       result.save();
+    //     });
+    // }
   }
 
-  getFiles = async (req: Request, res: Response) => {
-    if (res.locals.fileContains) {
-      res.status(400).json({ 
-        success: false,
-        error: 'File already contains in the current directory'
-      });
-    } 
-    
+  getFiles = async (req: Request, res: Response) => { 
     const user = res.locals.user;
     const path = req.body.path;
 
@@ -114,7 +124,7 @@ export default class FileController {
     const path = req.body.path;
     const folderName = req.body.folder;
 
-    const folder: IFile = new File({
+    const folder = new File({
       _id: new Types.ObjectId(),
       owner: user.id,
       name: folderName,
@@ -145,7 +155,7 @@ export default class FileController {
   deleteFile = async (req: Request, res: Response) => {
     const user: IUser = res.locals.user;
     const file: IFile =  res.locals.file;
-    const fileLocation = UPLOAD_DIR + user.id + file.path + file.name;
+    const fileLocation = UPLOAD_DIR + user._id + file.path + file.name;
 
     if (file.isDir) {
       fs.promises
@@ -185,30 +195,61 @@ export default class FileController {
 
   private removeFileFromDb(file: IFile, user: IUser) {    
     file.sharedWith.forEach(uid => {
-      User.findByIdAndUpdate(uid, { $pull: { files: file.id }}, (err, data) => {
+      User.findByIdAndUpdate(uid, { $pull: { files: file._id }}, (err, data) => {
         if (err) { 
           throw err;
         }
       });
     });
     
-    User.findByIdAndUpdate(user.id, { $pull: { files: file.id }}, (err, data) => {
+    User.findByIdAndUpdate(user._id, { $pull: { files: file._id }}, (err, data) => {
       if (err) { 
         throw err;
       }
     });
 
-    File.findByIdAndRemove(file.id, (err, file) => {
+    File.findByIdAndRemove(file._id, {new: true}, (err, file) => {
       if (err) {
         throw err;
       }
     });
+
+    this.updateFolderSize(file, false);
   }
 
   private deleteFolderFromDb(file: IFile, user: IUser) {
   }
 
-  shareFile = async (req: Request, res: Response) => {}
+  shareFile = async (req: Request, res: Response) => {
+    const email: string = req.body.email;
+    const file =  res.locals.file;
+
+    User.updateOne({ email: email }, { $push: { files: file._id } }, {new: true}, (err, user: UserDocument) => {
+      if (err) {
+        res.status(500).json({ 
+          success: false, 
+          error: 'invalid user email',
+        });
+      }
+      
+      file.sharedWith.add(user._id);
+      file.save();
+    });
+  }
+
+  sharedFiles = async (req: Request, res: Response) => {
+    const user = res.locals.user;
+
+    User.findById(user.id).populate('files', { 
+      _id: 1,
+      name: 1,
+      size_bytes: 1,
+      isDir: 1,
+      createdAt: 1
+    }).then(user => {
+      res.status(200).json(user.files);
+   });
+  }
 
   search = async (req: Request, res: Response) => {}
 }

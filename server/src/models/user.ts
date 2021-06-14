@@ -1,8 +1,15 @@
-import { Schema, model } from 'mongoose';
-import File from './file';
+import { Schema, model, Model, Document } from 'mongoose';
 import IUser from './interfaces/IUser';
 
-const userSchema = new Schema({
+export interface UserDocument extends IUser, Document {
+  _id: string
+}
+
+export interface UserModel extends Model<UserDocument, UserModel> {
+
+}
+
+const userSchema = new Schema<IUser>({
   email: {
     type: String,
     requeired: true,
@@ -11,11 +18,7 @@ const userSchema = new Schema({
     type: String,
     required: true,
   },
-  files: [{ type: Schema.Types.ObjectId, ref: File }],
+  files: [{ type: Schema.Types.ObjectId, ref: 'File' }],
 });
 
-const User = model<IUser>('User', userSchema);
-
-export { userSchema };
-
-export default User;
+export const User = model<UserDocument>('User', userSchema);
