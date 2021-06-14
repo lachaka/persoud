@@ -1,5 +1,5 @@
 import { ShareWithDialogComponent } from '../../modals/share-with-dialog/share-with-dialog.component';
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, Input, OnInit, ViewChild } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { MatDialog } from '@angular/material/dialog';
 import { MatMenuTrigger } from '@angular/material/menu';
@@ -16,10 +16,13 @@ import { FileManagerService } from '../../services/file-manager.service';
   styleUrls: ['./file-explorer.component.css'],
 })
 export class FileExplorerComponent implements OnInit {
-  path: string;
-  parrent: string[];
-  fileList: FileCard[];
-  unsubscriber: Subscription[];
+  @Input()
+  public resultGridList : Array<any> = [];
+
+  public fileList: FileCard[];
+  public path: string;
+  private parrent: string[];
+  private unsubscriber: Subscription[];
 
   @ViewChild(MatMenuTrigger) contextMenu: MatMenuTrigger;
 
@@ -42,6 +45,19 @@ export class FileExplorerComponent implements OnInit {
         .subscribe((files: FileCard[]) => {
           this.fileList = files
         })
+    );
+  }
+
+  receiveSearch($event) {
+    this.unsubscriber.push(
+      this.fileService.search($event).subscribe((files: FileCard[]) => {
+        if (files) {
+          this.fileList = [];
+          files.forEach((file) => {
+            this.fileList.push(file);
+          });
+        }
+      })
     );
   }
 
@@ -206,5 +222,10 @@ export class FileExplorerComponent implements OnInit {
           this.fileList = files
         })
     );
+  }
+
+
+  handleResults(searchObj) {
+    this.fileList = searchObj;
   }
 }

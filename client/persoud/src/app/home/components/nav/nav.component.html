@@ -3,8 +3,8 @@
     <span class="material-icons-outlined">cloud</span>
   </div>
   <form class="search">
-    <input type="text" placeholder="Search for a file" name="search"/>
-    <button type="submit">
+    <input type="text" placeholder="Search for a file" name="search" [(ngModel)]="searchFile"/>
+    <button type="submit" (click)="onSubmit()">
       <span class="material-icons-outlined">search</span>
     </button>
   </form>

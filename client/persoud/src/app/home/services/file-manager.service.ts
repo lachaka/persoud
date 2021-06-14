@@ -73,4 +73,8 @@ export class FileManagerService {
   sharedFiles() {
     return this.http.get(`${this.baseUrl}/shared`, { withCredentials: true });
   }
+
+  search(filename: string) {
+    return this.http.post(`${this.baseUrl}/search`, { filename }, { withCredentials: true });
+  }
 }
